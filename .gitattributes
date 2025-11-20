@@ -1,0 +1,7 @@
+# Reduce weight of HTML/CSS/JS
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
+
+# Force Python detection
+*.py linguist-language=Python
