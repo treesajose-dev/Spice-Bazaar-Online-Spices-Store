@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Management</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/form_style.css">
+</head>
+<body>
+    <div class="admin-dashboard">
+        {% if user_data and user_data['username'] == 'ossmanager123@gmail.com' %}
+            <a href="/admindash">&larr; Admin Dashboard</a>
+        {% else %}
+            <a href="/staffdash">&larr; Staff Dashboard</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <h1><center>Purchase Management</center></h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="form-container">
+            <h2>{{ 'Edit Purchase' if edit_mode else 'Add New Purchase' }}</h2>
+<form 
+    action="{{ url_for('edit_purchase_route', pur_master_id=purchase_master.Pur_master_id) if edit_mode else url_for('add_purchase_route') }}" 
+    method="POST" 
+    id="purchaseForm">
+    
+    <div class="form-group">
+        <label for="vendor_id">Select Vendor:</label>
+        <select id="vendor_id" name="vendor_id" required>
+            <option value="" disabled {{ 'selected' if not edit_mode }}>Select a vendor</option>
+            {% for vendor in vendors %}
+                <option value="{{ vendor.Vendor_id }}" 
+                    {% if edit_mode and vendor.Vendor_id == purchase_master.Vendor_id %}selected{% endif %}>
+                    {{ vendor.Vendor_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="pur_date">Purchase Date:</label>
+        <input 
+            type="date" 
+            id="pur_date" 
+            name="pur_date" 
+            required 
+            value="{{ purchase_master.Pur_date if edit_mode else '' }}">
+    </div>
+
+    <div id="items-container">
+        {% if edit_mode %}
+            {% for item in purchase_children %}
+                    <div class="item-entry">
+                        <h3>Item {{ loop.index }}</h3>
+                        <div class="form-group">
+                            <label>Select Item:</label>
+                            <select name="item_id[]" 
+                                    {% if item.Item_id %}readonly{% endif %} 
+                                    required>
+                                <option value="" disabled>Select an item</option>
+                                {% for it in items %}
+                                    <option value="{{ it.Item_id }}" 
+                                        {% if it.Item_id == item.Item_id %}selected{% endif %}>
+                                        {{ it.Item_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    
+                            {% if item.Item_id %}
+                                <!-- Provide the existing item ID for form consistency -->
+                                <input type="hidden" name="existing_item_id[]" value="{{ item.Item_id }}">
+                            {% endif %}
+                        </div>
+
+                    <div class="form-group">
+                        <label>Purchase Quantity (in packets):</label>
+                        <input type="number" name="pur_qty[]" required value="{{ item.Pur_qty }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Unit Price:</label>
+                        <input type="number" name="pur_unit_price[]" step="0.01" min="0.01" required value="{{ item.Pur_unit_price }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Item Unit Weight (in grams):</label>
+                        <input type="text" name="pur_unit_weight[]" 
+                               pattern="^[1-9][0-9]{0,3}$" 
+                               maxlength="4"
+                               required
+                               value="{{ item.Pur_unit_weight }}"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Batch Number:</label>
+                        <input type="text" name="batch_no[]" required pattern="[A-Za-z0-9]{1,5}" 
+                               value="{{ item.Batch_no or ''}}"
+                               title="Batch number must be 1-5 alphanumeric characters">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Item Date of Manufacture (DOM):</label>
+                        <input type="date" name="item_dom[]" required value="{{ item.Item_dom or ''}}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Expiry Date:</label>
+                        <input type="date" name="expiry_date[]" required value="{{ item.Expiry_date or ''}}">
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <!-- Default empty item for Add Mode -->
+            <div class="item-entry">
+                <h3>Item 1</h3>
+                <div class="form-group">
+                    <label for="item_id">Select Item:</label>
+                    <select name="item_id[]" required>
+                        <option value="" disabled selected>Select an item</option>
+                        {% for item in items %}
+                            <option value="{{ item.Item_id }}">{{ item.Item_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="pur_qty">Purchase Quantity (in packets):</label>
+                    <input type="number" name="pur_qty[]" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="pur_unit_price">Unit Price:</label>
+                    <input type="number" name="pur_unit_price[]" step="0.01" min="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Item Unit Weight (in grams):</label>
+                    <input type="number" name="pur_unit_weight[]" step="1" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="batch_no">Batch Number:</label>
+                    <input type="text" name="batch_no[]" required pattern="[A-Za-z0-9]{1,5}" 
+                           title="Batch number must be 1-5 alphanumeric characters">
+                </div>
+
+                <div class="form-group">
+                    <label for="item_dom">Item Date of Manufacture (DOM):</label>
+                    <input type="date" name="item_dom[]" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="expiry_date">Expiry Date:</label>
+                    <input type="date" name="expiry_date[]" required>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <button type="button" id="add-item" class="add-btn">Add Another Item</button>
+    <button type="submit" class="submit-btn">{{ 'Update Purchase' if edit_mode else 'Submit Purchase' }}</button>
+</form>
+
+        </div>
+
+        <h2><center>Purchase History</center></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Purchase ID</th>
+                    <th>Vendor</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for purchase in purchases %}
+                    <tr>
+                        <td>{{ purchase.Pur_master_id }}</td>
+                        <td>{{ purchase.Vendor_name }}</td>
+                        <td>{{ purchase.Pur_date }}</td>
+                        <td>₹{{ "%.2f"|format(purchase.Pur_tot_amt) }}</td>
+                        <td>
+                            <!-- View Details Button -->
+                            <button onclick="showPurchaseDetails('{{ purchase.Pur_master_id }}', '{{ purchase.Staff_id }}')" 
+                            class="view-btn">View Details</button>
+                        
+                            <!-- Edit Button -->
+                           <a href="{{ url_for('edit_purchase_route', pur_master_id=purchase.Pur_master_id) }}" 
+                               class="edit-btn">
+                               <button type="button">Edit</button>
+                           </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+document.getElementById('add-item').addEventListener('click', function() {
+    const container = document.getElementById('items-container');
+    const newItem = container.children[0].cloneNode(true);
+    const itemCount = container.children.length + 1;
+
+    newItem.querySelector('h3').textContent = `Item ${itemCount}`;
+    
+    // Clear all input values and ensure inputs are enabled
+    newItem.querySelectorAll('input').forEach(input => {
+        input.value = '';
+        input.removeAttribute('disabled'); // Ensure inputs are not disabled
+        input.required = true; // Ensure all inputs are required
+    });
+
+    // Handle the select dropdown
+    const selectElement = newItem.querySelector('select');
+    selectElement.selectedIndex = 0; // Reset selection to placeholder
+    selectElement.removeAttribute('disabled'); // Enable dropdown if disabled
+    selectElement.required = true; // Ensure the dropdown is required
+
+    // Remove hidden input if present to avoid duplication
+    const hiddenInput = newItem.querySelector('input[type="hidden"]');
+    if (hiddenInput) hiddenInput.remove();
+
+    container.appendChild(newItem);
+});
+
+
+// Check if in Edit Mode
+const isEditMode = "{{ 'true' if edit_mode else 'false' }}" === 'true';
+
+// Set Min and Max Date for Purchase Date (Only in Add Mode)
+const purDateInput = document.getElementById('pur_date');
+if (purDateInput && !isEditMode) {
+        const today = new Date();
+        
+        // Maximum date is today
+        const maxDate = today.toISOString().split('T')[0];
+        
+        // Minimum date is 10 days before today
+        const minDate = new Date(today.setDate(today.getDate() - 10)).toISOString().split('T')[0];
+        
+        purDateInput.min = minDate;
+        purDateInput.max = maxDate;
+}
+
+if (isEditMode || !isEditMode) {
+        // Set min date as today for all expiry dates
+        document.querySelectorAll('input[name="expiry_date[]"]').forEach(input => {
+            input.min = new Date().toISOString().split('T')[0];
+        });
+
+        // Set min and max date for all Date of Manufacture inputs
+        document.querySelectorAll('input[name="item_dom[]"]').forEach(input => {
+        const today = new Date();
+    
+        // Maximum date is today
+        input.max = today.toISOString().split('T')[0];
+    
+        // Minimum date is 2 month before today
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(today.getMonth() - 2);
+        input.min = oneMonthAgo.toISOString().split('T')[0];
+        });
+}
+
+        function showPurchaseDetails(purId) {
+     //Redirect to the purchase details page with purId as part of the URL and staffId as a query parameter
+   window.location.href = "/purchase/details/" + purId ;
+}
+    </script>
+</body>
+</html>

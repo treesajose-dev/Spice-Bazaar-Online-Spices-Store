@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Management</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/form_style.css">
+    <style>
+         .container {
+                padding: 20px;
+                max-width: 1250px;
+                margin: 0 auto;
+                background-color: beige;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding-bottom: 40px;
+            }
+    </style>
+</head>
+<body>
+    <div class="admin-dashboard">
+        {% if user_data and user_data['username'] == 'ossmanager123@gmail.com' %}
+            <a href="/admindash">&larr; Admin Dashboard</a>
+        {% else %}
+            <a href="/staffdash">&larr; Staff Dashboard</a>
+        {% endif %}
+    </div>
+    <div class="container">
+        <h1><center>Vendor Management</center></h1><br>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+<!-- Add or Edit Vendor Form -->
+<div class="form-container">
+    {% if vendor and vendor.Vendor_id %}
+        <h2>Edit Vendor</h2>
+        <form action="{{ url_for('edit_vendor_route', vendor_id=vendor.Vendor_id) }}" 
+              method="POST">
+    {% else %}
+        <h2>Add New Vendor</h2>
+        <form action="{{ url_for('add_vendor_route') }}" 
+              method="POST">
+    {% endif %}
+
+        <div class="form-group">
+            <label for="vendor_name">Vendor Name:</label>
+            <input type="text" id="vendor_name" name="vendor_name" value="{{ vendor.Vendor_name if vendor else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vendor_email">Vendor Email:</label>
+            <input type="email" id="vendor_email" name="vendor_email" value="{{ vendor.Vendor_email if vendor else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vendor_city">City:</label>
+            <input type="text" id="vendor_city" name="vendor_city" value="{{ vendor.Vendor_city if vendor else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vendor_dist">District:</label>
+            <input type="text" id="vendor_dist" name="vendor_dist" value="{{ vendor.Vendor_dist if vendor else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vendor_street">Street:</label>
+            <input type="text" id="vendor_street" name="vendor_street" value="{{ vendor.Vendor_street if vendor else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vendor_pin">Pin Code:</label>
+            <input type="text" id="vendor_pin" name="vendor_pin" pattern="\d{6}" title="Enter a 6-digit pin code" value="{{ vendor.Vendor_pin if vendor else '' }}" maxlength="6" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vendor_phone">Phone Number:</label>
+            <input type="text" id="vendor_phone" name="vendor_phone" pattern="\d{10}" title="Enter a 10-digit phone number" value="{{ vendor.Vendor_phone if vendor else '' }}" maxlength="10" required>
+        </div>
+
+        <button type="submit" class="{{ 'Update Vendor' if vendor else 'Add Vendor' }}">
+            {% if vendor %}Update Vendor{% else %}Add Vendor{% endif %}
+        </button>
+    </form>
+</div>
+    <h2><center>Vendor Details</center></h2>
+<table>
+    <thead>
+        <tr>
+            <th>Vendor Name</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>District</th>
+            <th>Street</th>
+            <th>Pin Code</th>
+            <th>Phone</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vendor in vendors %}
+        <tr>
+            <td>{{ vendor.Vendor_name }}</td>
+            <td>{{ vendor.Vendor_email }}</td>
+            <td>{{ vendor.Vendor_city }}</td>
+            <td>{{ vendor.Vendor_dist }}</td>
+            <td>{{ vendor.Vendor_street }}</td>
+            <td>{{ vendor.Vendor_pin }}</td>
+            <td>{{ vendor.Vendor_phone }}</td>
+            <td class="action-buttons">
+                {% if vendor.Vendor_status == 1 %}
+                    <a href="{{ url_for('edit_vendor_route', vendor_id=vendor.Vendor_id) }}" class="edit-link">
+                        <button type="button">Edit</button>
+                    </a>
+                    <form action="{{ url_for('change_vendor_status_route', vendor_id=vendor.Vendor_id, status=0) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="deactivate" onclick="return confirm('Are you sure you want to deactivate this vendor?')">
+                            Deactivate
+                        </button>
+                    </form>
+                {% else %}
+                    <form action="{{ url_for('change_vendor_status_route', vendor_id=vendor.Vendor_id, status=1) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="activate">Activate</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<script>
+    // Auto-hide flash messages after 5 seconds
+    setTimeout(function() {
+        var messages = document.querySelectorAll('.alert');
+        messages.forEach(msg => msg.style.display = 'none');
+    }, 10000);
+</script>
+
+</body>
+</html>

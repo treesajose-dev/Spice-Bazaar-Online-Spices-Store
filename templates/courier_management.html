@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier Management</title>
+    <link rel="stylesheet" href="/static/css/form_style.css">
+    <style>
+        .form-group select {
+                width: 41%;
+                padding: 10px;
+                font-size: 16px;
+                border: 3px solid #ff6b35;
+               border-radius: 30px;
+               background-color: #fff5e6;
+               transition: all 0.3s ease;
+                box-sizing: border-box;
+                cursor: pointer;
+                display: block;
+                margin: 0 auto; /* Centers the elements horizontally */
+            }
+
+             /* Styling dropdown options */
+.form-group select option {
+    background-color: #fff5e6;
+    color: #333; /* Dark text for readability */
+    font-size: 16px;
+    padding: 5px;
+}
+
+        .container {
+                padding: 20px;
+                max-width: 1370px;
+                margin: 0 auto;
+                background-color: beige;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding-bottom: 40px;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="admin-dashboard">
+        {% if user_data and user_data['username'] == 'ossmanager123@gmail.com' %}
+            <a href="/admindash">&larr; Admin Dashboard</a>
+        {% else %}
+            <a href="/staffdash">&larr; Staff Dashboard</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <h1><center>Courier Management</center></h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+<!-- Add or Edit Courier Form -->
+<div class="form-container">
+    {% if courier and courier.Courier_id %}
+        <h2>Edit Courier</h2>
+        <form action="{{ url_for('edit_courier_route', courier_id=courier.Courier_id) }}" 
+              method="POST">
+    {% else %}
+        <h2>Add New Courier</h2>
+        <form action="{{ url_for('add_courier_route') }}" 
+              method="POST">
+    {% endif %}
+
+<!--    <div class="form-group">
+        <label for="username">Select Courier Username:</label>
+        <select name="username" id="username" required {% if courier %} disabled {% endif %}>
+            <option value="">-- Select Username --</option>
+            {% for pending in usern %}
+                <option value="{{ pending.Username }}" 
+                        {% if courier and courier.Username == pending.Username %}selected{% endif %}>
+                    {{ pending.Username }}
+                </option>
+            {% endfor %}
+        </select> 
+        Add a hidden input to ensure the username value is submitted 
+        {% if courier %}
+            <input type="hidden" name="username" value="{{ courier.Username }}">
+        {% endif %}
+    </div>-->
+    
+  
+    <div class="form-group">
+        <label for="username">Select Courier Username</label>
+        <select id="username" name="username" required>
+            <option value="" disabled selected>Select Courier Username</option>
+            {% for pending in usern %}
+                <option value="{{ pending.Username }}" 
+                    {% if courier and courier.Username == pending.Username %}selected{% endif %}>
+                    {{ pending.Username }}
+                </option>
+            {% endfor %}
+        </select>
+    </div> 
+
+
+        <div class="form-group">
+            <label for="c_cmpy_email">Company Email:</label>
+            <input type="email" 
+                   id="c_cmpy_email" 
+                   name="c_cmpy_email" 
+                   value="{{ courier.C_cmpy_email if courier else '' }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="c_name">Company Name:</label>
+            <input type="text" 
+                   id="c_name" 
+                   name="c_name" 
+                   value="{{ courier.C_name if courier else '' }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="c_city">City:</label>
+            <input type="text" 
+                   id="c_city" 
+                   name="c_city" 
+                   value="{{ courier.C_city if courier else '' }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="c_dist">District:</label>
+            <input type="text" 
+                   id="c_dist" 
+                   name="c_dist" 
+                   value="{{ courier.C_dist if courier else '' }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="c_pin">Pin Code:</label>
+            <input type="text" 
+                   id="c_pin" 
+                   name="c_pin" 
+                   pattern="\d{6}" 
+                   title="Enter a 6-digit pin code" 
+                   value="{{ courier.C_pin if courier else '' }}"
+                   maxlength="6"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="c_street">Street:</label>
+            <input type="text" 
+                   id="c_street" 
+                   name="c_street" 
+                   value="{{ courier.C_street if courier else '' }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="c_phone">Phone Number:</label>
+            <input type="text" 
+                   id="c_phone" 
+                   name="c_phone" 
+                   pattern="\d{10}" 
+                   title="Enter a 10-digit phone number" 
+                   value="{{ courier.C_phone if courier else '' }}"
+                   maxlength="10"
+                   required>
+        </div>
+
+        <button type="submit" class="{% if courier %}edit-btn{% else %}add-btn{% endif %}">
+            {{ 'Update Courier' if courier else 'Add Courier' }}
+        </button>
+    </form>
+</div>
+    <h2><center>Courier Details</center></h2>
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Company Email</th>
+            <th>Company Name</th>
+            <th>City</th>
+            <th>District</th>
+            <th>Pin Code</th>
+            <th>Street</th>
+            <th>Phone</th>
+            <th>Join Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for courier in couriers %}
+        <tr>
+            <td>{{ courier.Username }}</td>
+            <td>{{ courier.C_cmpy_email }}</td>
+            <td>{{ courier.C_name }}</td>
+            <td>{{ courier.C_city }}</td>
+            <td>{{ courier.C_dist }}</td>
+            <td>{{ courier.C_pin }}</td>
+            <td>{{ courier.C_street }}</td>
+            <td>{{ courier.C_phone }}</td>
+            <td>{{ courier.C_join.strftime('%d-%m-%Y') }}</td>
+            <td class="action-buttons">
+                {% if courier.Courier_status == 1 %}
+                    <!-- Edit action when the courier is active -->
+                    <a href="{{ url_for('edit_courier_route', courier_id=courier.Courier_id) }}" class="edit-link">
+                        <button type="button">Edit</button>
+                    </a>
+            
+                    <!-- Deactivate action when the courier is active -->
+                    <form action="{{ url_for('change_courier_status_route', courier_id=courier.Courier_id, status=0) }}" 
+                          method="POST" style="display: inline;">
+                        <button type="submit" class="deactivate" 
+                                onclick="return confirm('Are you sure you want to deactivate this courier?')">
+                            Deactivate
+                        </button>
+                    </form>
+                {% else %}
+                    <!-- Activate action when the courier is inactive -->
+                    <form action="{{ url_for('change_courier_status_route', courier_id=courier.Courier_id, status=1) }}" 
+                          method="POST" style="display: inline;">
+                        <button type="submit" class="activate">Activate</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+</body>
+</html>

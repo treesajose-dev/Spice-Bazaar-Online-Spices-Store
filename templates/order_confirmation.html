@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .confirmation-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .success-icon {
+            color: #28a745;
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        .continue-btn, .download-btn {
+            background-color: #400969;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        .continue-btn:hover, .download-btn:hover {
+            background-color: #2d0047;
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    {% include "partials/header.html" %}
+    <div class="container">
+        <div class="confirmation-container">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Order Confirmed!</h2>
+            <p class="text-muted">Thank you for your purchase. Your order has been successfully placed.</p>
+            <p>Order ID: CM00{{ order_id }}</p><br>
+            <a href="{{ url_for('home') }}" class="continue-btn mt-3">Continue Shopping</a>
+            <a href="{{ url_for('download_invoice_route', order_id=order_id) }}" class="download-btn mt-3">Download Invoice</a>
+        </div>
+    </div>
+    {% include "partials/footer.html" %}
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'920e5cd7389cb016',t:'MTc0MjA2NjM2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>

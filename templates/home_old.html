@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to Spice Bazaar</h1>
+        <p>Your one-stop shop for premium spices from around the world!</p>
+        <a href="/about" class="btn">Learn More</a>
+    </div>
+</section>
+
+<section class="featured-products">
+    <h2>Our Best Sellers</h2>
+    <div class="products">
+        <div class="product-card">
+            <img src="{{ url_for('static', filename='images/turmeric.jpg') }}" alt="Turmeric Powder">
+            <h3>Turmeric</h3>
+            <p>Rich in flavor and health benefits.</p>
+        </div>
+        <div class="product-card">
+            <img src="{{ url_for('static', filename='images/cinnamon.jpg') }}" alt="Cinnamon Powder">
+            <h3>Cinnamon</h3>
+            <p>A warm and aromatic spice.</p>
+        </div>
+        <div class="product-card">
+            <img src="{{ url_for('static', filename='images/chilli.jpg') }}" alt="Chilli Powder">
+            <h3>Chili Powder</h3>
+            <p>Add a spicy kick to your dishes.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

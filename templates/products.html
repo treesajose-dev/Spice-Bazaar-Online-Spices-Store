@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f1e7;
+}
+
+.container {
+    display: flex;
+    padding: 20px;
+}
+
+.filter-container {
+    width: 20%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.filter-container h3 {
+    margin-top: 0;
+}
+
+.filter-container label {
+    display: block;
+    margin: 10px 0;
+}
+
+.filter-container input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.filter-container .price-slider {
+    margin: 20px 0;
+}
+
+.filter-container button {
+    background-color: #8b5e3c;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.item-grid {
+    width: 80%;
+    display: flex; /* Side-by-side layout */
+    flex-wrap: wrap; /* Allows items to wrap to the next line */
+    gap: 20px; /* Space between items */
+    padding-left: 20px;
+    justify-content: flex-start; /* Align items to the start */
+}
+
+.item-card {
+    text-decoration: none;
+    color: black;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+    flex-direction: column; /* Vertical stacking within each card */
+    width: 200px; /* Fixed width for consistency */
+    height: 100%; /* Allow height to adjust based on content */
+}
+
+.image-container {
+    height: 200px;
+    overflow: hidden;
+}
+
+.item-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-details {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1; /* Allow details to take remaining space */
+}
+
+.item-name {
+    margin: 0;
+    font-size: 18px;
+    color: purple; /* Matching the single container image */
+}
+
+.item-price {
+    margin: 5px 0;
+    color: #d4a373; /* Matching the single container image */
+    font-size: 16px;
+}
+
+.item-weight {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.view-button {
+    display: inline-block;
+    background-color: #8b5e3c;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: auto; /* Push button to the bottom */
+}
+
+.hidden {
+    display: none;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filter-header h3 {
+    margin: 0;
+}
+
+.remove-all {
+    text-decoration: none;
+    color: #d4a373;
+    font-size: 14px;
+}
+
+.weight-select {
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    margin: 8px 0;
+    width: 100%;
+    font-size: 14px;
+    color: #333;
+}
+
+.weight-select:focus {
+    outline: none;
+    border-color: #d4a373;
+    box-shadow: 0 0 3px rgba(212, 163, 115, 0.3);
+}
+
+.item-name-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.rating-display {
+    margin-left: 5px;
+    font-size: 14px;
+}
+.rating-star {
+    color: gold;
+}
+    </style>
+</head>
+<body>
+    {% include "partials/header.html" %}
+    <div class="container">
+        <div class="filter-container">
+            <div class="filter-header">
+            <h3>FILTER</h3>
+            <a href="{{ url_for('products') }}" style="text-decoration: none; color: #8b5e3c;">Remove all</a>
+            </div>
+            <h4>Category</h4>
+            {% for category in categories %}
+                <label>
+                    <input type="checkbox" 
+                           class="category-checkbox" 
+                           name="category" 
+                           value="{{ category['Cat_id'] }}" 
+                           {% if 'category' in filters and category['Cat_id']|string in filters['category'].split(',') %}checked{% endif %}>
+                    {{ category['Cat_name'] }}
+                </label>
+            {% endfor %}
+            
+            <h4>Subcategories</h4>
+            <div id="subcategory-container">
+                {% for category in categories %}
+                    <div id="subcats-{{ category['Cat_id'] }}" class="subcategory-group hidden">
+                        {% if category['Cat_id'] in category_subcat_map %}
+                            {% for subcat in category_subcat_map[category['Cat_id']] %}
+                                <label>
+                                    <input type="checkbox" 
+                                           name="subcategory" 
+                                           value="{{ subcat|escape }}"
+                                           {% if 'subcategory' in filters %}
+                                               {% set subcat_list = filters['subcategory'].split(',')|map('trim')|list %}
+                                               {% if subcat in subcat_list %}checked{% endif %}
+                                           {% endif %}>
+                                    {{ subcat }}
+                                </label>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <h4>Price</h4>
+            <input type="range" id="priceRange" name="price_max" min="0" max="3000" value="{{ filters.get('price_max', 3000) }}" oninput="updatePriceValue()">
+            <p id="priceValue">Price: Rs. 0 - Rs. {{ filters.get('price_max', 3000) }}</p>
+            
+            <button onclick="applyFilters()">Apply Filters</button>
+        </div>
+        
+        <div class="item-grid">
+            {% for item in items %}
+            <div class="item-card">
+                    <div class="image-container">
+                        <img src="data:image/jpeg;base64,{{ item['Item_image'] if item['Item_image'] else '' }}" alt="{{ item['Item_name'] }}" class="item-image" />
+                    </div> 
+                    <div class="item-details">
+                        <div class="item-name-container">
+                            <p class="item-name">{{ item['Item_name'] }}</p>
+                            <span class="rating-display">
+                              ({{ '{:.1f}'.format(item['avg_rating']) }} <span class="rating-star">★</span> · {{ item['review_count'] }} {{ 'reviews' if item['review_count'] != 1 else 'review' }})
+                            </span>
+                          </div>
+                
+                        {% set weight_options = item['weight_options']|tojson %}
+                        <p class="item-price" id="price-{{ item['Item_id'] }}">
+                            ₹{{ item['weight_options'][0]['price'] }}
+                        </p>
+                        {% if item['weight_options']|length > 1 %}
+                            <select class="weight-select" id="weight-{{ item['Item_id'] }}" 
+                                    onchange="updateItemDetails('{{ item['Item_id'] }}', this.value)">
+                                {% for option in item['weight_options'] %}
+                                    <option value="{{ option['weight'] }}" 
+                                            data-price="{{ option['price'] }}">
+                                        {{ option['weight'] }}g
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <p class="item-weight" id="weight-text-{{ item['Item_id'] }}">
+                                {{ item['weight_options'][0]['weight'] }}g
+                            </p>
+                        {% endif %}
+                        
+                            <a href="{{ url_for('item_details', item_id=item['Item_id'], unit_weight=item['weight_options'][0]['weight']) }}" 
+                               class="view-button" id="view-link-{{ item['Item_id'] }}">
+                                View Details
+                            </a>
+                        
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    
+    </div>
+    <script>
+        // Function to initialize the page
+        function initPage() {
+            // Update price value display
+            updatePriceValue();
+            
+            // Setup category checkbox event listeners
+            setupCategoryCheckboxes();
+            
+            // Show subcategories for pre-selected categories on page load
+            showInitialSubcategories();
+        }
+        
+        // Function to update price value display
+        function updatePriceValue() {
+            const slider = document.getElementById('priceRange');
+            const value = document.getElementById('priceValue');
+            value.textContent = `Price: Rs. 0 - Rs. ${slider.value}`;
+        }
+        
+        // Function to setup category checkbox event listeners
+        function setupCategoryCheckboxes() {
+            document.querySelectorAll('.category-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // If this checkbox is being checked, show its subcategories
+                    const catId = this.value;
+                    const subcatGroup = document.getElementById(`subcats-${catId}`);
+                    
+                    if (this.checked && subcatGroup) {
+                        subcatGroup.classList.remove('hidden');
+                    } else if (subcatGroup) {
+                        subcatGroup.classList.add('hidden');
+                        // Uncheck all subcategories in this group when the category is unchecked
+                        subcatGroup.querySelectorAll('input[type="checkbox"]').forEach(subCheck => {
+                            subCheck.checked = false;
+                        });
+                    }
+                });
+            });
+        }
+        
+        /*
+        // Function to show subcategories for pre-selected categories
+        function showInitialSubcategories() {
+            {% if 'category' in filters and filters['category'] %}
+                const initialCategories = "{{ filters['category'] }}".split(',');
+                initialCategories.forEach(catId => {
+                    if (catId.trim()) {
+                        const initialGroup = document.getElementById(`subcats-${catId.trim()}`);
+                        if (initialGroup) {
+                            initialGroup.classList.remove('hidden');
+                        }
+                    }
+                });
+            {% endif %}
+        }*/
+
+        function updateItemDetails(itemId, selectedWeight) {
+    const weightSelect = document.getElementById(`weight-${itemId}`);
+    const priceDisplay = document.getElementById(`price-${itemId}`);
+    const viewLink = document.getElementById(`view-link-${itemId}`);
+    
+    // Get the selected option and its price
+    const selectedOption = weightSelect.options[weightSelect.selectedIndex];
+    const price = selectedOption.getAttribute('data-price');
+    
+    // Update the displayed price
+    priceDisplay.textContent = `₹${parseFloat(price).toFixed(2)}`;
+    
+    // Update the view details link with the selected weight
+    const currentHref = viewLink.getAttribute('href');
+    // Parse the current URL to a URL object
+    const url = new URL(currentHref, window.location.origin);
+    // Set or update the unit_weight parameter
+    url.searchParams.set('unit_weight', selectedWeight);
+    // Update the href attribute with the new URL
+    viewLink.setAttribute('href', url.pathname + url.search);
+}
+        
+        // Function to apply filters
+        function applyFilters() {
+            const categoryCheckboxes = document.querySelectorAll('input[name="category"]:checked');
+            const subcategoryCheckboxes = document.querySelectorAll('input[name="subcategory"]:checked');
+            const priceRange = document.getElementById('priceRange').value;
+            
+            const params = new URLSearchParams();
+            
+            // Add categories
+            const categories = Array.from(categoryCheckboxes).map(cb => cb.value);
+            if (categories.length > 0) {
+                params.append('category', categories.join(','));
+            }
+            
+            // Add subcategories
+            const subcategories = Array.from(subcategoryCheckboxes).map(cb => cb.value);
+            if (subcategories.length > 0) {
+                params.append('subcategory', subcategories.join(','));
+            }
+            
+            // Add price
+            params.append('price_max', priceRange);
+            
+            // Redirect with params
+            window.location.href = "{{ url_for('products') }}?" + params.toString();
+        }
+        
+        // Initialize the page when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script><br><br><br><br><br><br>
+    {% include "partials/footer.html" %}
+</body>
+</html>

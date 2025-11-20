@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Category Management</title>
+        <link rel="stylesheet" href="/static/css/styles.css">
+        <link rel="stylesheet" href="/static/css/form_style.css">
+        <script src="{{ url_for('static', filename='js/resize_img.js') }}"></script>
+    </head>
+<body>
+    
+    <div class="admin-dashboard">
+        {% if user_data and user_data['username'] == 'ossmanager123@gmail.com' %}
+            <a href="/admindash">&larr; Admin Dashboard</a>
+        {% else %}
+            <a href="/staffdash">&larr; Staff Dashboard</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <h1><center>Category Management</center></h1>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Add or Edit Category Form -->
+        <div class="form-container">
+            {% if category and category.Cat_id %}
+                <h2>Edit Category</h2>
+                <form action="{{ url_for('edit_category_route', cat_id=category.Cat_id) }}" 
+                      method="POST" 
+                      enctype="multipart/form-data">
+            {% else %}
+                <h2>Add New Category</h2>
+                <form action="{{ url_for('add_category_route') }}" 
+                      method="POST" 
+                      enctype="multipart/form-data">
+            {% endif %}
+                
+                <div class="form-group">
+                    <label for="cat_name">Category Name:</label>
+                    <input type="text" 
+                           id="cat_name" 
+                           name="cat_name" 
+                           value="{{ category.Cat_name if category else '' }}" 
+                           required>
+                </div>
+        
+                <div class="form-group">
+                    <label for="cat_desc">Category Description:</label>
+                    <textarea id="cat_desc" 
+                            name="cat_desc" 
+                            required 
+                            rows="3">{{ category.Cat_desc if category else '' }}</textarea>
+                </div>
+        
+                <div class="form-group">
+                    <label for="cat_image">Category Image:</label>
+                    <input type="file" 
+                           id="cat_image" 
+                           name="cat_image" 
+                           accept=".jpg,.jpeg" 
+                           {% if not category %}required{% endif %}
+                           onchange="resizeImage(this)">
+                    {% if category and category.Cat_image %}
+                        <div class="current-image">
+                            <p>Current Image:</p>
+                            <img src="data:image/jpeg;base64,{{ category.Cat_image }}" 
+                                 alt="{{ category.Cat_name }}" 
+                                 class="table-image">
+                        </div>
+                    {% endif %}
+                    <input type="hidden" name="resized_image" id="resized_image">
+                </div>
+
+                <button type="submit" class="{% if category %}edit-btn{% else %}add-btn{% endif %}">
+                    {{ 'Update Category' if category else 'Add Category' }}
+                </button>
+            </form>
+        </div>
+
+        <!-- Categories Table --><h2><center>Category Details</center></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                    <tr>
+                        <td>{{ cat.Cat_id }}</td>
+                        <td>{{ cat.Cat_name }}</td>
+                        <td>{{ cat.Cat_desc }}</td>
+                        <td>
+                            {% if cat.Cat_image %}
+                                <img src="data:image/jpeg;base64,{{ cat.Cat_image }}" 
+                                     alt="{{ cat.Cat_name }}" 
+                                     class="table-image">
+                            {% else %}
+                                No Image
+                            {% endif %}
+                        </td>
+                        <td>{{ "Active" if cat.Cat_status == 1 else "Inactive" }}</td>
+                        <td class="action-buttons">
+                        {% if cat.Cat_status == 1 %}
+                           <!-- Edit action when the category is active -->
+                            <a href="{{ url_for('edit_category_route', cat_id=cat.Cat_id) }}" class="edit-link">
+                            <button type="button">Edit</button>
+                            </a>
+        
+                            <!-- Deactivate action when the category is active -->
+                            <form action="{{ url_for('change_category_status_route', cat_id=cat.Cat_id, status=0) }}" 
+                            method="POST" style="display: inline;">
+                            <button type="submit" class="deactivate">Deactivate</button>
+                            </form>
+                        {% else %}
+                            <!-- Activate action when the category is inactive -->
+                            <form action="{{ url_for('change_category_status_route', cat_id=cat.Cat_id, status=1) }}" 
+                            method="POST" style="display: inline;">
+                            <button type="submit" class="activate">Activate</button>
+                            </form>
+                        {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "partials/head.html" %}
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #FFF5E6;
+    }
+
+    .about-us {
+      max-width: 950px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: #FFFFFF;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .about-us h1 {
+      color: #fa611b;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-us p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .spice-decoration {
+      display: flex;
+      justify-content: space-around;
+      margin: 2rem 0;
+    }
+
+    .spice-icon {
+      width: 80px;
+      height: 80px;
+      background-color: #FFD700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #FFFFFF;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .mission-statement {
+      background-color: #fa611b;
+      color: #FFFFFF;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .mission-statement h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .contact-info {
+      text-align: center;
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #F0F0F0;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  {% include "partials/header.html" %}
+
+  <section class="about-us">
+    <h1>About Spice Bazaar</h1>
+    
+    <div class="spice-decoration">
+      <div class="spice-icon">🌶️</div>
+      <div class="spice-icon">🧄</div>
+      <div class="spice-icon">🌿</div>
+    </div>
+
+    <p>
+      Welcome to Spice Bazaar, your gateway to a world of flavors! We are passionate about bringing you the finest spices from around the globe. From the vibrant yellows of turmeric to the deep reds of saffron, our products are carefully sourced from trusted growers who share our unwavering commitment to quality.
+    </p>
+    
+    <p>
+      Our journey began with a simple idea: to make high-quality, authentic spices accessible to everyone. Whether you're a professional chef crafting exquisite dishes in a bustling restaurant or a home cook experimenting with new flavors in your kitchen, our spices are designed to elevate your culinary creations.
+    </p>
+
+    <p>
+      At Spice Bazaar, we believe that every meal is an opportunity to explore new tastes and create memorable experiences. Our extensive range of spices, herbs, and blends are selected to inspire your cooking and bring the authentic flavors of world cuisines to your table.
+    </p>
+
+    <div class="mission-statement">
+      <h2>Our Mission</h2>
+      <p>To enrich lives through the magic of spices, promoting cultural understanding and culinary exploration one dish at a time.</p>
+    </div>
+
+  </section>
+
+  {% include "partials/footer.html" %}
+</body>
+</html>

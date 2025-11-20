@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Management</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/form_style.css">
+    <script src="{{ url_for('static', filename='js/resize_img.js') }}"></script>
+</head>
+<body>
+
+    <div class="admin-dashboard">
+        {% if user_data and user_data['username'] == 'ossmanager123@gmail.com' %}
+            <a href="/admindash">&larr; Admin Dashboard</a>
+        {% else %}
+            <a href="/staffdash">&larr; Staff Dashboard</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <h1><center>Item Management</center></h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Add or Edit Item Form -->
+        <div class="form-container">
+            {% if item and item.Item_id %}
+            <h2>Edit Item</h2>
+                <form action="{{ url_for('edit_item_route', item_id=item.Item_id) }}" 
+                      method="POST" 
+                      enctype="multipart/form-data">
+            {% else %}
+            <h2>Add New Item</h2>
+            <form action="{{ url_for('add_item_route') }}" 
+                method="POST" enctype="multipart/form-data">
+                {% endif %}    
+
+                <div class="form-group">
+                    <label for="subcat_id">Select Subcategory:</label>
+                    <select id="subcat_id" name="subcat_id" required>
+                        <option value="" disabled {% if not item %}selected{% endif %}>Select a subcategory</option>
+                        {% for subcategory in subcategories %}
+                            <option value="{{ subcategory.Subcat_id }}"
+                            {% if item and item.Subcat_id == subcategory.Subcat_id %}selected{% endif %}>
+                            {{ subcategory.Subcat_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>    
+
+                <div class="form-group">
+                    <label for="item_name">Item Name:</label>
+                    <input type="text" id="item_name" name="item_name"
+                    value="{{ item.Item_name if item else '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="item_desc">Item Description:</label>
+                    <textarea id="item_desc" name="item_desc" required 
+                    rows="3">{{ item.Item_desc if item else '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="item_profit">Profit Percentage:</label>
+                    <input type="text" id="item_profit" name="item_profit" step="0.01"
+                    min="0.00"
+                    max="999.99"
+                    title="Profit must be a positive decimal number between 0.00 and 999.99, with up to 2 decimal places."
+                    value="{{ item.Item_profit if item else '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="item_image">Item Image:</label>
+                    <input type="file" id="item_image" name="item_image" accept=".jpg,.jpeg" 
+                           {% if not item %} required {% endif %}
+                           onchange="resizeImage(this)">
+                
+                    
+                    <input type="hidden" name="resized_image" id="resized_image">
+                </div>
+
+                <button type="submit" class="{% if item %}edit-btn{% else %}add-btn{% endif %}">
+                    {{ 'Update Item' if item else 'Add Item' }}</button>
+            </form>
+        </div>
+
+        <h2><center>Item Details</center></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item Name</th>
+                    <th>Subcategory</th>
+                    <th>Description</th>
+                    <th>Profit %</th>
+                    <th>Image</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for itm in items %}
+                    <tr>
+                        <td>{{ itm.Item_id }}</td>
+                        <td>{{ itm.Item_name }}</td>
+                        <td>{{ itm.Subcat_name }}</td>
+                        <td>{{ itm.Item_desc }}</td>
+                        <td>{{ itm.Item_profit }}%</td>
+                        <td>
+                            {% if itm.Item_image %}
+                                <img src="data:image/jpeg;base64,{{ itm.Item_image }}" alt="{{ itm.Item_name }}" class="table-image">
+                            {% else %}
+                                No Image
+                            {% endif %}
+                        </td>
+                        <td>{{ "Active" if itm.Item_status == 1 else "Inactive" }}</td>
+                        <td class="action-buttons">
+                        {% if itm.Item_status == 1 %}
+                           <!-- Edit action when the item is active -->
+                            <a href="{{ url_for('edit_item_route', item_id=itm.Item_id) }}" class="edit-link">
+                            <button type="button">Edit</button>
+                            </a>
+        
+                            <!-- Deactivate action when the item is active -->
+                            <form action="{{ url_for('change_item_status_route', item_id=itm.Item_id, status=0) }}" 
+                            method="POST" style="display: inline;">
+                            <button type="submit" class="deactivate">Deactivate</button>
+                            </form>
+                        {% else %}
+                            <!-- Activate action when the item is inactive -->
+                            <form action="{{ url_for('change_item_status_route', item_id=itm.Item_id, status=1) }}" 
+                            method="POST" style="display: inline;">
+                            <button type="submit" class="activate">Activate</button>
+                            </form>
+                        {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>

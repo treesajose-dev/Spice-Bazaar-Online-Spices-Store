@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff5e6;
+        }
+        .checkout-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin: 30px 0;
+            width:80%;
+            margin-left:150px
+        } 
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-control {
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            width: 100%;
+        }
+        .saved-card {
+            background-color: #f1f3f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .saved-card:hover {
+            background-color: #e9ecef;
+        }
+        .payment-btn {
+            background-color: #400969;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .payment-btn:hover {
+            background-color: #2d0047;
+        }
+        .section-title {
+            color: #400969;
+            margin-bottom: 25px;
+        }
+        .invalid-input {
+            border-color: #dc3545;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    {% include "partials/header.html" %}
+    <div class="container">
+        <div class="row">
+            <!-- Shipping Details -->
+            <div class="col-lg-6">
+                <div class="checkout-container">
+                    <h2 class="section-title">Shipping Details</h2>
+                    <form id="shipping-form">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" value="{{ customer.Cust_fname }} {{ customer.Cust_lname }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" class="form-control" value="{{ customer.Cust_phone }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea class="form-control" readonly>{{ customer.Cust_street }}, {{ customer.Cust_city }}, {{ customer.Cust_dist }}, {{ customer.Cust_pin }}</textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="col-lg-6">
+                <div class="checkout-container">
+                    <h2 class="section-title">Payment Details</h2>
+                    
+                    <!-- Saved Cards -->
+{% if saved_cards %}
+<h4>Saved Cards</h4>
+{% for card in saved_cards %}
+    <div class="saved-card" onclick="selectCard('{{ card.Card_id }}', '{{ card.Card_no }}', '{{ card.Exp_month }}', '{{ card.Exp_year }}', '{{ card.Card_name }}')">
+        <input type="radio" name="card_select" value="{{ card.Card_id }}" id="card_{{ card.Card_id }}">
+        <label for="card_{{ card.Card_id }}">**** **** **** {{ card.Card_no[-4:] }} - {{ card.Card_name }}</label>
+    </div>
+{% endfor %}
+{% endif %}
+
+<!-- New Card Form -->
+<form action="{{ url_for('process_payment') }}" method="post" id="payment-form" onsubmit="return validateForm()">
+<input type="hidden" name="cart_master_id" value="{{ cart_master_id }}">
+<input type="hidden" name="selected_card_id" id="selected_card_id">
+
+<div class="form-group">
+    <label>Card Number</label>
+    <input type="text" class="form-control" name="card_no" id="card_no" maxlength="16" pattern="[0-9]{16}" placeholder="1234 5678 9012 3456" oninput="validateCardNumber(this)">
+    <div class="error-message" id="card_no_error">Please enter a valid 16-digit card number (numbers only).</div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>Expiry Month</label>
+            <input type="text" class="form-control" name="exp_month" id="exp_month" maxlength="2" pattern="[0-1][0-9]" placeholder="MM" oninput="validateMonth(this)">
+            <div class="error-message" id="exp_month_error">Enter a valid month (01-12) not in the past.</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>Expiry Year</label>
+            <input type="text" class="form-control" name="exp_year" id="exp_year" maxlength="4" pattern="[0-9]{4}" placeholder="YYYY" oninput="validateYear(this)">
+            <div class="error-message" id="exp_year_error">Enter a valid year (e.g., 2025) not in the past.</div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label>Card Holder Name</label>
+    <input type="text" class="form-control" name="card_name" id="card_name" pattern="[A-Za-z ]+" placeholder="John Doe" oninput="validateName(this)">
+    <div class="error-message" id="card_name_error">Only alphabets and spaces are allowed.</div>
+</div>
+<div class="form-group">
+    <label>CVV</label>
+    <input type="text" class="form-control" name="cvv" id="cvv" maxlength="3" pattern="[0-9]{3}" placeholder="123" oninput="validateCVV(this)">
+    <div class="error-message" id="cvv_error">Enter a valid 3-digit CVV (numbers only).</div>
+</div>
+<div class="form-group">
+    <label>Static Password</label>
+    <input type="password" class="form-control" pattern="[A-Za-z0-9 ]+" maxlength="8" 
+           placeholder="Static password" oninput="validateStaticPass(this)" required>
+    <div class="error-message" id="card_pass_error">
+        Only alphabets, numbers, and spaces are allowed.
+    </div>
+</div>
+<div class="form-group">
+    <input type="checkbox" name="save_card" id="save_card">
+    <label for="save_card">Save this card for future use (Max 3 cards)</label>
+</div>
+<button type="submit" class="payment-btn w-100">Make Payment</button>
+</form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "partials/footer.html" %}
+    <script>
+        // Get current date dynamically
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1; // Months are 0-indexed, so +1
+
+        function validateCardNumber(input) {
+            const value = input.value.replace(/\D/g, ''); // Remove non-digits
+            input.value = value;
+            const error = document.getElementById('card_no_error');
+            if (value.length !== 16) {
+                input.classList.add('invalid-input');
+                error.style.display = 'block';
+            } else {
+                input.classList.remove('invalid-input');
+                error.style.display = 'none';
+            }
+        }
+
+        function validateMonth(input) {
+    const value = input.value.replace(/\D/g, ''); // Remove non-digits
+    input.value = value;
+    const error = document.getElementById('exp_month_error');
+    const month = parseInt(value);
+    // const yearInput = document.getElementById('exp_year'); // Optional
+    // const year = parseInt(yearInput.value) || currentYear; // Optional
+
+    if (value.length !== 2 || month < 1 || month > 12) {
+        input.classList.add('invalid-input');
+        error.style.display = 'block';
+    } else {
+        input.classList.remove('invalid-input');
+        error.style.display = 'none';
+    }
+}
+
+        function validateYear(input) {
+            const value = input.value.replace(/\D/g, '');
+            input.value = value;
+            const error = document.getElementById('exp_year_error');
+            const year = parseInt(value);
+            const monthInput = document.getElementById('exp_month');
+            const month = parseInt(monthInput.value) || currentMonth;
+
+            if (value.length !== 4 || year < currentYear || 
+                (year === currentYear && month < currentMonth)) {
+                input.classList.add('invalid-input');
+                error.style.display = 'block';
+            } else {
+                input.classList.remove('invalid-input');
+                error.style.display = 'none';
+            }
+        }
+
+        function validateName(input) {
+            const value = input.value.replace(/[^A-Za-z ]/g, ''); // Remove non-alphabets except spaces
+            input.value = value;
+            const error = document.getElementById('card_name_error');
+            if (!value || value.trim() === '') {
+                input.classList.add('invalid-input');
+                error.style.display = 'block';
+            } else {
+                input.classList.remove('invalid-input');
+                error.style.display = 'none';
+            }
+        }
+
+        function validateCVV(input) {
+            const value = input.value.replace(/\D/g, '');
+            input.value = value;
+            const error = document.getElementById('cvv_error');
+            if (value.length !== 3) {
+                input.classList.add('invalid-input');
+                error.style.display = 'block';
+            } else {
+                input.classList.remove('invalid-input');
+                error.style.display = 'none';
+            }
+        }
+
+        function validateStaticPass(input) {
+    const value = input.value.replace(/[^A-Za-z0-9 ]/g, ''); // Allow only alphabets, numbers, and spaces
+    input.value = value;
+    const error = document.getElementById('card_pass_error');
+    
+    if (!value.trim()) {
+        input.classList.add('invalid-input');
+        error.style.display = 'block';
+    } else {
+        input.classList.remove('invalid-input');
+        error.style.display = 'none';
+    }
+}
+
+        function validateForm() {
+            const cardNo = document.getElementById('card_no');
+            const expMonth = document.getElementById('exp_month');
+            const expYear = document.getElementById('exp_year');
+            const cardName = document.getElementById('card_name');
+            const cvv = document.getElementById('cvv');
+            const selectedCard = document.getElementById('selected_card_id').value;
+
+            // Skip validation if a saved card is selected
+            if (selectedCard) return true;
+
+            validateCardNumber(cardNo);
+            validateMonth(expMonth);
+            validateYear(expYear);
+            validateName(cardName);
+            validateCVV(cvv);
+
+            const errors = [
+                cardNo.classList.contains('invalid-input'),
+                expMonth.classList.contains('invalid-input'),
+                expYear.classList.contains('invalid-input'),
+                cardName.classList.contains('invalid-input'),
+                cvv.classList.contains('invalid-input')
+            ];
+
+            return !errors.includes(true);
+        }
+
+        function selectCard(cardId, cardNo, expMonth, expYear, cardName) {
+        // Set the hidden selected_card_id field
+        document.getElementById('selected_card_id').value = cardId;
+
+        // Check the corresponding radio button
+        document.querySelectorAll('input[name="card_select"]').forEach(radio => {
+            radio.checked = radio.value === cardId;
+        });
+
+        // Prefill the form fields with the saved card details
+        document.getElementById('card_no').value = cardNo;
+        document.getElementById('exp_month').value = expMonth;
+        document.getElementById('exp_year').value = expYear;
+        document.getElementById('card_name').value = cardName;
+        document.getElementById('cvv').value = ''; // CVV should be re-entered for security
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color:#fff5e6; 
+        }
+        .profile-container {
+            width: 700px;
+            margin: 80px auto 20px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 0px;
+        }
+        .profile-container h1 {
+            color: #fa611b;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 5px;
+            margin-bottom: 30px;
+        }
+        .profile-details label {
+            font-weight: bold;
+            color: #264653;
+        }
+        .profile-details span {
+            color: #666;
+        }
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: right;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-edit:hover {
+            background-color: #45a049;
+        }
+        .btn-password {
+            background-color: #fa611b;
+            color: white;
+        }
+        .btn-password:hover {
+            background-color: #e85a2a;
+        }
+
+        .btn-password-submit {
+            background-color: #45a049;
+            color: white;
+        }
+        .btn-password-submit:hover {
+            background-color: #45a049;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            position:relative;
+            margin-top: 50px;
+        }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .modal-content h2 {
+            color: #fa611b;
+            margin-bottom: 20px;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            color: #264653;
+            font-weight: bold;
+        }
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #fa611b;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .message-container {
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: green;
+        }
+        .error-message {
+            background-color: #ffebee;
+            border: 1px solid #f5c6cb;
+            color: red;
+        }
+        .courier-dashboard-link {
+                margin-top: 25px;
+                margin-left: 20px;
+                margin-bottom: 20px;
+            }
+            .courier-dashboard-link a {
+                display: inline-block;
+                padding: 10px 20px;
+                background: #fa611b;
+                color: #fff;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                transition: background 0.3s;
+                border: none;
+                border-radius: 20px;
+                font-size: 16px;
+            }
+            .courier-dashboard-link a:hover {
+                background: #e85a2a;
+                border: none;
+                border-radius: 20px;
+                font-size: 16px;
+                
+            }
+            .toggle-old-password {
+            position: absolute;
+            right: 30px;
+            top: 58px;
+            transform: translateY(60px);
+            cursor: pointer;
+            color: #fa611b;
+        }
+        .toggle-new-password {
+            position: absolute;
+            right: 30px;
+            top: 143px;
+            transform: translateY(60px);
+            cursor: pointer;
+            color: #fa611b;
+        }
+        .toggle-confirm-password {
+            position: absolute;
+            right: 30px;
+            top: 227px;
+            transform: translateY(60px);
+            cursor: pointer;
+            color: #fa611b;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="static/images/logo.jpg" height="50" width="50" alt="Spice Bazaar Logo" class="logo-image"> 
+                <div class="logo">Spice Bazaar (Courier Dashboard)</div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="/staff_profile" style="text-decoration: none;">
+                    <button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Profile
+                    </button>
+                </a>
+
+                <a href="/logout" style="text-decoration: none;">
+                    <button style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Logout
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+<!-- Back Courier Dashboard Link -->
+<div class="courier-dashboard-link">
+    <a href="/courierdash">← Courier Dashboard</a>
+    </div>
+
+    <div class="profile-container">
+        <h1>Your Profile</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message-container {% if category == 'success' %}success-message{% else %}error-message{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <div class="profile-details">
+            <label>Email:</label><span>{{ courier.Username }}</span>
+            <label>Company Name:</label><span>{{ courier.C_name }}</span>
+            <label>Company Email:</label><span>{{ courier.C_cmpy_email }}</span>
+            <label>City:</label><span>{{ courier.C_city }}</span>
+            <label>District:</label><span>{{ courier.C_dist }}</span>
+            <label>Pin Code:</label><span>{{ courier.C_pin }}</span>
+            <label>Street:</label><span>{{ courier.C_street }}</span>
+            <label>Phone:</label><span>{{ courier.C_phone }}</span>
+            <label>Join Date:</label><span>{{ courier.C_join }}</span>
+        </div>
+        <div class="buttons">
+            <button class="btn btn-edit" onclick="showEditModal()">Edit Profile</button>
+            <button class="btn btn-password" onclick="showPasswordModal()">Change Password</button>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideEditModal()">&times;</span>
+            <h2>Edit Profile</h2>
+            <form action="/edit_courier_profile" method="POST">
+                <label for="c_name"> Company Name:</label>
+                <input type="text" id="c_name" name="c_name" value="{{ courier.C_name }}" required>
+                <label for="c_cmpy_email">Company Email:</label>
+                <input type="email" id="c_cmpy_email" name="c_cmpy_email" value="{{ courier.C_cmpy_email }}" required>
+                <label for="c_city">City:</label>
+                <input type="text" id="c_city" name="c_city" value="{{ courier.C_city }}" required>
+                <label for="c_dist">District:</label>
+                <input type="text" id="c_dist" name="c_dist" value="{{ courier.C_dist }}" required>
+                <label for="c_pin">Pin Code:</label>
+                <input type="text" id="c_pin" name="c_pin" value="{{ courier.C_pin }}" maxlength="6" pattern="\d{6}" required>
+                <label for="c_street">Street:</label>
+                <input type="text" id="c_street" name="c_street" value="{{ courier.C_street }}" required>
+                <label for="c_phone">Phone:</label>
+                <input type="text" id="c_phone" name="c_phone" value="{{ courier.C_phone }}" maxlength="10" pattern="\d{10}" required>
+                <button type="submit" class="btn btn-edit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hidePasswordModal()">&times;</span>
+            <h2>Change Password</h2>
+            <form action="/change_courier_password" method="POST">
+                <label for="old_password">Old Password:</label>
+                <input type="password" id="old_password" name="old_password" required>
+                <span class="toggle-old-password" onclick="toggle_oldPassword()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ff6b35">
+                        <path d="M480.18-311Q559-311 614-366.18q55-55.17 55-134Q669-579 613.82-634q-55.17-55-134-55Q401-689 346-633.82q-55 55.17-55 134Q291-421 346.18-366q55.17 55 134 55Zm-.12-101q-36.64 0-62.35-25.65T392-499.94q0-36.64 25.65-62.35T479.94-588q36.64 0 62.35 25.65T568-500.06q0 36.64-25.65 62.35T480.06-412ZM480-157q-163 0-294.5-95T-5-500q59-153 190.5-248T480-843q163 0 294.5 95T965-500q-59 153-190.5 248T480-157Zm0-343Zm.09 222q112.91 0 207.2-60.54Q781.58-399.08 832-500q-50.42-100.92-144.8-161.46Q592.82-722 479.91-722t-207.2 60.54Q178.42-600.92 128-500q50.42 100.92 144.8 161.46Q367.18-278 480.09-278Z"/>
+                    </svg>
+                </span>
+
+                <label for="new_password">New Password:</label>
+                <input type="password" id="new_password" name="new_password" required>
+                <span class="toggle-new-password" onclick="toggle_newPassword()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ff6b35">
+                        <path d="M480.18-311Q559-311 614-366.18q55-55.17 55-134Q669-579 613.82-634q-55.17-55-134-55Q401-689 346-633.82q-55 55.17-55 134Q291-421 346.18-366q55.17 55 134 55Zm-.12-101q-36.64 0-62.35-25.65T392-499.94q0-36.64 25.65-62.35T479.94-588q36.64 0 62.35 25.65T568-500.06q0 36.64-25.65 62.35T480.06-412ZM480-157q-163 0-294.5-95T-5-500q59-153 190.5-248T480-843q163 0 294.5 95T965-500q-59 153-190.5 248T480-157Zm0-343Zm.09 222q112.91 0 207.2-60.54Q781.58-399.08 832-500q-50.42-100.92-144.8-161.46Q592.82-722 479.91-722t-207.2 60.54Q178.42-600.92 128-500q50.42 100.92 144.8 161.46Q367.18-278 480.09-278Z"/>
+                    </svg>
+                </span>
+
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+                <span class="toggle-confirm-password" onclick="toggle_confirmPassword()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ff6b35">
+                        <path d="M480.18-311Q559-311 614-366.18q55-55.17 55-134Q669-579 613.82-634q-55.17-55-134-55Q401-689 346-633.82q-55 55.17-55 134Q291-421 346.18-366q55.17 55 134 55Zm-.12-101q-36.64 0-62.35-25.65T392-499.94q0-36.64 25.65-62.35T479.94-588q36.64 0 62.35 25.65T568-500.06q0 36.64-25.65 62.35T480.06-412ZM480-157q-163 0-294.5-95T-5-500q59-153 190.5-248T480-843q163 0 294.5 95T965-500q-59 153-190.5 248T480-157Zm0-343Zm.09 222q112.91 0 207.2-60.54Q781.58-399.08 832-500q-50.42-100.92-144.8-161.46Q592.82-722 479.91-722t-207.2 60.54Q178.42-600.92 128-500q50.42 100.92 144.8 161.46Q367.18-278 480.09-278Z"/>
+                    </svg>
+                </span>
+
+                <button type="submit" class="btn btn-password-submit">Change Password</button>
+            </form>
+        </div>
+    </div>
+
+    {% include "partials/footer.html" %}
+
+    <script>
+        function showEditModal() {
+            document.getElementById('editModal').style.display = 'block';
+        }
+        function hideEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        function showPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'block';
+        }
+        function hidePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        function toggle_oldPassword() {
+            var passwordField = document.getElementById("old_password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+        function toggle_newPassword() {
+            var passwordField = document.getElementById("new_password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+        function toggle_confirmPassword() {
+            var passwordField = document.getElementById("confirm_password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+    </script>
+</body>
+</html>

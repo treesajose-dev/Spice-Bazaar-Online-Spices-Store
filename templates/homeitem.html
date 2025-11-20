@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include "partials/head.html" %}
+<head>
+<style>
+    /* Product-specific styles only - no global styles that could affect header/footer */
+    .product-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        width: 90%;
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px 0;
+    }
+
+    /* Product Image */
+    .product-image {
+        flex: 1;
+        min-width: 300px;
+        max-width: 400px;
+        text-align: center;
+    } 
+
+    .product-image img {
+        max-width: 100%;
+        width: 300px;         /* Standard width */
+    height: 400px;
+        object-fit: contain;
+    }
+
+    /* Product Details */
+    .product-details {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    /* Product Title */
+    .product-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #0F1111;
+    }
+
+    /* Product Price */
+    .product-price {
+        font-size: 28px;
+        font-weight: 500;
+        color: #B12704;
+        margin: 10px 0;
+    }
+
+    /* Product Description */
+    .product-description {
+        margin: 20px 0;
+        color: #333;
+        line-height: 1.5;
+    }
+
+    /* Quantity Selector */
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .quantity-btn {
+        width: 30px;
+        height: 30px;
+        background: #F0F2F2;
+        border: 1px solid #D5D9D9;
+        border-radius: 3px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .quantity-btn:hover {
+        background: #E7E9EC;
+    }
+
+    .quantity-input {
+        width: 50px;
+        height: 30px;
+        text-align: center;
+        margin: 0 5px;
+        border: 1px solid #D5D9D9;
+        border-radius: 3px;
+    }
+
+    /* Add to Cart Button */
+    .add-to-cart-btn {
+        background: #FFD814;
+        border: 1px solid #FCD200;
+        border-radius: 20px;
+        box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        width: 100%;
+        max-width: 250px;
+        color: #0F1111;
+        margin-bottom: 15px;
+    }
+
+    .add-to-cart-btn:hover {
+        background: #F7CA00;
+    }
+
+    /* Flash Messages */
+    .success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: green;
+        padding: 10px 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+    }
+
+    .error {
+        background-color: #ffcccc;
+        color: red;
+        padding: 10px 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+    }
+    
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-block;
+        background-color: #5a4632;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        margin-bottom: 20px;
+        margin-left: 20px;
+    }
+
+    .back-btn:hover {
+        background-color: #7e6043;
+    }
+
+    /* Review Section */
+    .review-section {
+        margin: 20px 0;
+    }
+
+    .review-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .review-input {
+        width: 100%;
+        max-width: 500px;
+        height: 100px;
+        padding: 10px;
+        border: 1px solid #D5D9D9;
+        border-radius: 3px;
+    }
+
+    .rating-stars {
+        color: #FFD700;
+        font-size: 24px;
+    }
+
+    .submit-review-btn {
+        background: #5a4632;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 200px;
+    }
+
+    .submit-review-btn:hover {
+        background: #7e6043;
+    }
+
+    .edit-review-btn {
+        background: #FFD814;
+        color: #0F1111;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    .edit-review-btn:hover {
+        background: #F7CA00;
+    }
+
+    .recent-reviews {
+        margin-top: 20px;
+    }
+
+    .review-item {
+        background: #f7edd4;
+        color: black;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .review-item .username {
+        color: #FFA500;
+        font-weight: bold;
+    }
+
+    .review-item .date {
+        color: #FFA500;
+        font-size: 15px;
+        align-items: right;
+        margin-left: 290px;
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-block;
+        background-color: #5a4632;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        margin-bottom: 20px;
+        margin-left: 20px;
+    }
+
+    .back-btn:hover {
+        background-color: #7e6043;
+    }
+        /* Average Rating Stars */
+        .average-rating {
+    display: inline-block;
+    color: #0F1111;
+    margin-left: 10px;
+}
+.average-rating .rating-value {
+    color: #0F1111;
+}
+.average-rating .star {
+    color: #FFD700;
+    margin-left: 3px;
+}
+</style>
+
+<script>
+    let edit_mode = false;
+
+    function enableEdit() {
+    const textarea = document.querySelector('.review-input');
+    const editButton = document.querySelector('.edit-review-btn');
+    const submitButton = document.querySelector('.submit-review-btn');
+
+    if (textarea && editButton && submitButton) {
+        textarea.removeAttribute('readonly');
+        editButton.style.display = 'none';
+        submitButton.style.display = 'block'; // Now visible
+        // Update stars color based on existing rating
+        const rating = parseInt(document.getElementById('rating').value) || 0;
+        setRating(rating);
+    } else {
+        console.error('One or more elements not found:', { textarea, editButton, submitButton });
+    }
+}
+
+</script>
+</head>
+<body>
+{% include "partials/header.html" %}
+<main><br>
+    <!-- Go Back Button -->
+    <a href="javascript:history.back()" class="back-btn">Go Back</a>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ category }}" style="width: 90%; max-width: 1200px; margin: 0 auto;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="product-container">
+        <!-- Product Image Section -->
+        <div class="product-image">
+            <img src="data:image/jpeg;base64,{{ item['Item_image'] }}" alt="{{ item['Item_name'] }}"/>
+        </div>
+        
+        <!-- Product Details Section -->
+        <div class="product-details">
+            <h1 class="product-title">{{ item['Item_name'] }} <span class="average-rating">(<span class="rating-value">
+                {{ "%.1f" % avg_rating if avg_rating else "0.0" }}</span>
+                <span class="star">★</span>)</span></h1>
+
+            <p class="product-price">₹{{ item['Sell_price'] }}</p>
+            <p class="product-price">{{ item['Pur_unit_weight'] }}g</p>
+            <div class="product-description">
+                <p style="white-space: pre-line;">{{ item['Item_desc'] }}</p>
+            </div>
+            
+            <!-- Form with Quantity Selector -->
+            <form action="{{ url_for('add_to_cart', item_id=request.view_args.item_id) }}" method="POST">
+                <input type="hidden" name="unit_weight" value="{{ item['Pur_unit_weight'] }}">
+                <div class="quantity-selector">
+                    <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                    <input type="number" id="quantity" name="quantity" class="quantity-input" value="1" min="1" max="10">
+                    <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                </div>
+
+                <!-- Add to Cart Button -->
+                <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+            </form>
+
+<!-- Review Section -->
+<div class="review-section">
+    {% if not is_logged_in %}
+        <p>Please <a href="{{ url_for('loginpage') }}">login</a> to post a review.</p>
+    {% elif user_review %}
+        <p>You have already have posted a review, please click on box given below to edit it.</p>
+        <form class="review-form" method="POST" action="{{ url_for('submit_review', item_id=request.view_args.item_id) }}" method="POST">
+            <input type="hidden" name="unit_weight" value="{{ item['Pur_unit_weight'] }}">
+            <textarea class="review-input" name="review_text" placeholder="Write your review..." {% if not edit_mode %}readonly{% endif %}>{{ user_review['Review_text'] if user_review else '' }}</textarea>
+            <div class="rating-stars">
+                {% for i in range(1, 6) %}
+                    {% set color = '#FFD700' if user_review and user_review['Rating'] >= i else '#D3D3D3' %}
+                    <span style="cursor: pointer; color: {{ color }};" onclick="setRating({{ i }})">★</span>
+                {% endfor %}
+                <input type="hidden" name="rating" id="rating" value="{{ user_review['Rating'] if user_review else 0 }}">
+            </div>
+            
+            <button type="submit" class="submit-review-btn">Update Review</button>
+            {% if not edit_mode %}
+                <button type="button" class="edit-review-btn" onclick="enableEdit()">Edit</button>
+            {% endif %}
+        </form>
+    {% elif can_review %}
+        <form class="review-form" method="POST" action="{{ url_for('submit_review', item_id=request.view_args.item_id) }}" method="POST">
+            <input type="hidden" name="unit_weight" value="{{ item['Pur_unit_weight'] }}">
+            <textarea class="review-input" name="review_text" placeholder="Write your review..."></textarea>
+            <div class="rating-stars">
+                {% for i in range(1, 6) %}
+                    <span 
+                        style="cursor: pointer; color: #D3D3D3;" 
+                        onclick="setRating({{ i }})">★</span>
+                {% endfor %}
+                <input type="hidden" name="rating" id="rating" value="0">
+            </div>
+            
+            <button type="submit" class="submit-review-btn">Submit Review</button>
+        </form>
+    {% endif %}
+</div>
+
+<!-- Recent Reviews -->
+<div class="recent-reviews">
+    <h3>Reviews</h3>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <label for="sort-select" style="font-weight: bold;">Sort by</label>
+        <select id="sort-select" onchange="sortReviews()" style="padding: 5px;">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+        </select>
+    </div>
+    <div id="review-list">
+        {% for review in reviews %}
+            <div class="review-item" data-date="{{ review['Reviewrating_date'] }}">
+                <span class="username">{{ review['Username'] }}</span>
+                <span class="date">{{ review['Reviewrating_date'] }}</span>
+                <p>{{ review['Review_text'] }}</p>
+                <div class="rating-stars">
+                    {% for i in range(1, 6) %}
+                        <span {% if review.get('Rating', 0)|int >= i %}style="color: #FFD700;"{% else %}style="color: #D3D3D3;"{% endif %}>★</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<script>
+    function increaseQuantity() {
+        let quantityInput = document.getElementById('quantity');
+        let currentValue = parseInt(quantityInput.value);
+        if(currentValue < 10) {
+            quantityInput.value = currentValue + 1;
+        }
+    }
+    
+    function decreaseQuantity() {
+        let quantityInput = document.getElementById('quantity');
+        let currentValue = parseInt(quantityInput.value);
+        if(currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+    }
+
+    function setRating(rating) {
+        const stars = document.querySelectorAll('.rating-stars span');
+        stars.forEach((star, index) => {
+            star.style.color = index < rating ? '#FFD700' : '#D3D3D3';
+        });
+        document.getElementById('rating').value = rating;
+    }
+
+    function sortReviews() {
+        const select = document.getElementById('sort-select');
+        const reviewList = document.getElementById('review-list');
+        const reviews = Array.from(reviewList.getElementsByClassName('review-item'));
+
+        reviews.sort((a, b) => {
+            const dateA = new Date(a.getAttribute('data-date'));
+            const dateB = new Date(b.getAttribute('data-date'));
+
+            if (isNaN(dateA) || isNaN(dateB)) {
+                console.error('Invalid date format:', { dateA: a.getAttribute('data-date'), dateB: b.getAttribute('data-date') });
+                return 0; // Avoid sorting if dates are invalid
+            }
+
+            if (select.value === 'newest') {
+                return dateB - dateA; // Newest first
+            } else {
+                return dateA - dateB; // Oldest first
+            }
+        });
+
+        // Reorder the reviews in the DOM
+        reviews.forEach(review => reviewList.appendChild(review));
+    }
+</script>
+
+{% include "partials/footer.html" %}
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/form_style.css">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <a href="/admindash">&larr; Admin Dashboard</a>
+    </div>
+
+    <div class="container">
+        <h2><center>Customer Management</center></h2>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Cust ID</th>
+                    <th>Username</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Join Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.Cust_id }}</td>
+                    <td>{{ customer.Username }}</td>
+                    <td>{{ customer.Cust_fname }}</td>
+                    <td>{{ customer.Cust_lname }}</td>
+                    <td>{{ customer.Cust_join }}</td>
+                    <td>{{ 'Active' if customer.Cust_status == 1 else 'Inactive' }}</td>
+                    <td class="action-buttons">
+                        {% if customer.Cust_status == 1 %}
+                            <form action="{{ url_for('change_customer_status_route', username=customer.Username, status=0) }}" method="post" style="display:inline;">
+                                <button type="submit" class="deactivate">Deactivate</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('change_customer_status_route', username=customer.Username, status=1) }}" method="post" style="display:inline;">
+                                <button type="submit" class="activate">Activate</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

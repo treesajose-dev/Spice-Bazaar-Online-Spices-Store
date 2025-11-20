@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include "partials/head.html" %}
+<head>
+    <style>
+        /* Subcategory Banner */
+        .subcategory-banner {
+            width: 100%;
+            height: 50vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .subcategory-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85);
+        }
+
+        .banner-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            padding: 40px 0 20px;
+            text-align: center;
+        }
+
+        .banner-title {
+            color: white;
+            font-size: 42px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Main Content Container */
+        .subcategory-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: -50px auto 60px;
+            position: relative;
+            z-index: 2;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        /* Category Description */
+        .subcategory-desc {
+            color: #666;
+            line-height: 1.6;
+            margin: 0 auto 30px;
+            max-width: 800px;
+            font-size: 16px;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #5a4632;
+            margin: 30px 0 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 3px;
+            background: #5a4632;
+            bottom: -10px;
+            left: 20%;
+        }
+
+        /* Items Grid */
+        .item-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        /* Item Card */
+        .item-card {
+            width: 220px;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+            padding-bottom: 15px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .item-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Item Image Container */
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        /* Rectangular Item Image */
+        .item-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .item-card:hover .item-image {
+            transform: scale(1.1);
+        }
+
+        /* Item Details */
+        .item-details {
+            padding: 15px 12px;
+        }
+
+        /* Item Name */
+        .item-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #5a4632;
+            margin: 0 0 8px;
+            display: -webkit-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            max-height: 2.4em;
+            line-height: 1.2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Item Price */
+        .item-weight,.item-price {
+            font-size: 18px;
+            color: #d35400;
+            margin: 5px 0 0;
+            font-weight: bold;
+        }
+
+        /* View Button */
+        .view-button {
+            background: #5a4632;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .view-button:hover {
+            background: #7e6043;
+            transform: scale(1.05);
+        }
+        
+        /* Weight Selector */
+        .weight-select {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #f8f8f8;
+            margin: 8px 0;
+            width: 90%;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .weight-select:focus {
+            outline: none;
+            border-color: #5a4632;
+            box-shadow: 0 0 3px rgba(90, 70, 50, 0.3);
+        }
+
+        /* Link Styling */
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .subcategory-banner {
+                height: 40vh;
+            }
+            
+            .banner-title {
+                font-size: 32px;
+            }
+            
+            .subcategory-container {
+                margin-top: -30px;
+                padding: 20px;
+            }
+            
+            .item-card {
+                width: 45%;
+                min-width: 150px;
+            }
+            
+            .image-container {
+                height: 150px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .item-card {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+         /* Back Button Styling */
+         .back-btn {
+            display: inline-block;
+            background-color: #5a4632;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background-color: #7e6043;
+        }
+
+        .item-name-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+}
+.rating-display {
+    margin-left: 5px;
+    font-size: 16px;
+}
+.rating-star {
+    color: gold;
+}
+    </style>
+</head>
+<body>
+    {% include "partials/header.html" %}
+    <main>
+        <!-- Banner Section with Overlay -->
+        <div class="subcategory-banner">
+            <img src="data:image/jpeg;base64,{{ subcategory['Subcat_image'] }}" alt="{{ subcategory['Subcat_name'] }}" />
+            <div class="banner-overlay">
+                <h1 class="banner-title">{{ subcategory['Subcat_name'] }}</h1>
+            </div>
+        </div>
+        <br>
+        <!-- Main Content Section -->
+        <div class="subcategory-container">
+            <p class="subcategory-desc">{{ subcategory['Subcat_desc'] }}</p>
+            <a href="javascript:history.back()" class="back-btn">Go Back</a><br>
+            <h2 class="section-title">Our Collection</h2>
+            
+            <div class="item-grid">
+                {% for item in items %}
+                <div class="item-card">
+                    <div class="image-container">
+                        <img src="data:image/jpeg;base64,{{ item['Item_image'] }}" alt="{{ item['Item_name'] }}" class="item-image" />
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name-container">
+                            <p class="item-name">{{ item['Item_name'] }}</p>
+                            <span class="rating-display">
+                              ({{ '{:.1f}'.format(item['avg_rating']) }} <span class="rating-star">★</span> · {{ item['review_count'] }} {{ 'reviews' if item['review_count'] != 1 else 'review' }})
+                            </span>
+                          </div>
+                        
+                        {% set weight_options = item['weight_options']|tojson %}
+                        
+                        <p class="item-price" id="price-{{ item['Item_id'] }}">
+                            ₹{{ item['weight_options'][0]['price'] }}
+                        </p>
+                        
+                        {% if item['weight_options']|length > 1 %}
+                            <select class="weight-select" id="weight-{{ item['Item_id'] }}" 
+                            onchange="updateItemDetails('{{ item['Item_id'] }}', this.value)">
+                                {% for option in item['weight_options'] %}
+                                    <option value="{{ option['weight'] }}" 
+                                            data-price="{{ option['price'] }}">
+                                        {{ option['weight'] }}g
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <p class="item-weight" id="weight-text-{{ item['Item_id'] }}">
+                                {{ item['weight_options'][0]['weight'] }}g
+                            </p>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('item_details', item_id=item['Item_id'], unit_weight=item['weight_options'][0]['weight']) }}" 
+                           class="view-button" id="view-link-{{ item['Item_id'] }}">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function updateItemDetails(itemId, weightOptions) {
+            const weightSelect = document.getElementById(`weight-${itemId}`);
+            const priceDisplay = document.getElementById(`price-${itemId}`);
+            const viewLink = document.getElementById(`view-link-${itemId}`);
+            
+            // Get the selected weight and its corresponding price
+            const selectedWeight = weightSelect.value;
+            const selectedOption = weightSelect.options[weightSelect.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            
+            // Update the displayed price
+            priceDisplay.textContent = `₹${price}`;
+            
+            // Update the view details link with the selected weight
+            const currentHref = viewLink.getAttribute('href');
+            const baseUrl = currentHref.split('?')[0];
+            viewLink.setAttribute('href', `${baseUrl}?unit_weight=${selectedWeight}`);
+        }
+    </script>
+    
+    {% include "partials/footer.html" %}
+</body>
+</html>

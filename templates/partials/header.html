@@ -1,0 +1,50 @@
+<header>
+    <nav>
+        <div class="logo">
+            <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" height="50" width="50" alt="Spice Bazaar Logo" class="logo-image"> 
+        </a>
+        <a style="text-decoration: none; color: inherit;" href="{{ url_for('home') }}"><div class="logo">Spice Bazaar</div></a>
+        </div>
+        
+        <div class="header-container">
+            <a href="/">Home</a>
+            <a href="/about">About Us</a>
+            <a href="/contact">Contact</a>
+            <a href="/products">Products</a>
+
+            <!-- Search Icon and Container -->
+            <div class="search-container">
+                <span class="search-icon" style="font-size: 30px; cursor: pointer;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" 
+                    stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="position: relative; left: 6px;">
+                        <circle cx="11" cy="11" r="6"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>                    
+                </span>
+                <div class="search-box" style="display: none;">
+                    <input type="text" id="search-input" placeholder="Search by spice name or description ...">
+                    <div id="search-results" class="search-results"></div>
+                </div>
+            </div>
+
+            {% if not session.get('username') or not user_data %}
+                <a href="/loginpage">Login</a>
+            {% else %}
+                <!-- Cart Icon -->
+                <a href="{{ url_for('cart_details') }}" style="font-size: 30px;">🛒</a>
+
+                <!-- User Profile Icon with Username (Without Domain) -->
+<a href="{{ url_for('customerdash', username=session['username']) }}" style="font-size: 30px; color: white; text-decoration: none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="white" style="position: relative; top: 2px; right: 10px;">
+        <path d="M12 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 12c-4.42 0-8 3.58-8 8h16c0-4.42-3.58-8-8-8z"/>
+    </svg> <span style="font-size: 17.8px; transition: color 0.3s;" class="username-text">{{ session['username'].split('@')[0] }}</span>
+</a>
+            {% endif %}
+         
+    </div> 
+</nav>
+    <!-- Include the JavaScript file here -->
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+</header>

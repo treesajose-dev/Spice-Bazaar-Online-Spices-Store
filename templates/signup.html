@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="signup-form">
+    <h1>Staff Signup</h1>
+    
+    <!-- Display all errors at the top -->
+    {% if errors %}
+        <div class="error-messages">
+            <ul>
+                {% for field, message in errors.items() %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form action="/signup" method="POST">
+        <label for="username">Email:</label>
+        <input type="email" id="username" name="username" required>
+
+        <label for="fname">First Name:</label>
+        <input type="text" id="fname" name="fname" required>
+
+        <label for="lname">Last Name:</label>
+        <input type="text" id="lname" name="lname" required>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+
+        <label for="district">District:</label>
+        <input type="text" id="district" name="district" required>
+
+        <label for="pin">Pin Code:</label>
+        <input type="text" id="pin" name="pin" maxlength="6" pattern="\d{6}" required>
+
+        <label for="street">Street Name:</label>
+        <input type="text" id="street" name="street" required>
+
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" name="phone" maxlength="10" pattern="\d{10}" required>
+
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="O">Other</option>
+        </select>
+
+        <button type="submit">Sign Up</button>
+    </form>
+</section>
+
+<style>
+    .error-messages {
+        background-color: #fdd;
+        border: 1px solid red;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+    }
+    .error-messages ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .error-messages li {
+        color: red;
+        font-size: 0.9em;
+        margin: 5px 0;
+    }
+</style>
+{% endblock %}

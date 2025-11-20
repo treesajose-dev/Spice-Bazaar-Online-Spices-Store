@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "partials/head.html" %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        
+        .cart-header {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .cart-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            width:80%;
+            margin-left:150px
+        }
+        .cart-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 0;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .item-image {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .item-details {
+            display: flex;
+            align-items: center;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+        }
+        .quantity-btn {
+            background-color: #e9ecef;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+            cursor: pointer;
+        }
+        .summary-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .checkout-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .checkout-btn:hover {
+            background-color: #218838;
+        }
+        .remove-btn {
+            color: #dc3545;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 50px 0;
+        }
+        
+
+   a{
+    text-decoration: none;
+   }
+   a:hover{
+    color: #264653;
+   }
+    </style>
+    
+
+</head>
+<body>
+    {% include "partials/header.html" %}
+<br>
+    <div class="container">
+        {% if cart_items %}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cart-container">
+                    <h2 class="mb-4">Cart Items ({{ cart_items|length }})</h2>
+                    
+                    {% for item in cart_items %}
+                    <div class="cart-item">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <a href="{{ url_for('item_details', item_id=item['Item_id'], unit_weight=item['Pur_unit_weight']) }}">
+                                    <img src="data:image/jpeg;base64,{{ item.item_image }}" alt="{{ item.item_name }}" class="item-image">
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="{{ url_for('item_details', item_id=item['Item_id'], unit_weight=item['Pur_unit_weight']) }}">
+                                    <h4 style="color:#ff6b35;font-size:17px;margin-bottom: 10px;"
+                                    onmouseover="this.style.color='#d9534f'" 
+                                    onmouseout="this.style.color='#ff6b35'">
+                                    {{ item.Item_name }} ({{ item.Pur_unit_weight }}g)</h4>
+                                </a>
+                                <!--<p class="text-muted">{{ item.Item_desc }}</p>-->
+                            </div>
+                            <div class="col-md-3">
+                                <div class="quantity-control">
+                                    <form action="{{ url_for('update_cart_item') }}" method="post" class="d-inline">
+                                        <input type="hidden" name="cart_child_id" value="{{ item.Cart_child_id }}">
+                                        <input type="hidden" name="action" value="decrease">
+                                        <button type="submit" class="quantity-btn"><i class="fas fa-minus"></i></button>
+                                    </form>
+                                    <span class="mx-2">{{ item.Cart_qty }}</span>
+                                    <form action="{{ url_for('update_cart_item') }}" method="post" class="d-inline">
+                                        <input type="hidden" name="cart_child_id" value="{{ item.Cart_child_id }}">
+                                        <input type="hidden" name="action" value="increase">
+                                        <button type="submit" class="quantity-btn"><i class="fas fa-plus"></i></button>
+                                    </form>
+                                </div>
+                                <!-- Add this error message display -->
+{% with messages = get_flashed_messages(category_filter=['quantity_error_' + item.Cart_child_id|string]) %}
+{% if messages %}
+    <div class="quantity-error" style="color: red; font-size: 16px; margin-top: 5px;margin-right:10px;background-color: #ffcccc; padding: 5px; border-radius: 5px;">
+        {{ messages[0] }}
+    </div>
+{% endif %}
+{% endwith %}
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-end">
+                                    <p class="text-muted small">₹{{ item.Cart_unit_price }} per item</p> <!-- Fixed -->
+                                    <h3>Total Price ₹{{ item.Cart_price }}</h3> <!-- Fixed: Correct variable name -->                    
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <form action="{{ url_for('remove_cart_item') }}" method="post">
+                                    <input type="hidden" name="cart_child_id" value="{{ item.Cart_child_id }}">
+                                    <button type="submit" class="remove-btn"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+            
+            <div class="col-lg-4">
+                <div class="cart-container summary-card">
+                    <h3 class="mb-4">Order Summary</h3>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <strong>Total</strong>
+                        <strong>₹{{ cart_total }}</strong>
+                    </div>
+                    <form action="{{ url_for('checkout') }}" method="post">
+                        <button type="submit" class="checkout-btn w-100">Proceed to Checkout</button>
+                    </form>
+                </div>
+                
+                
+            </div>
+        </div>
+        {% else %}
+        <div class="cart-container empty-cart">
+            <i class="fas fa-shopping-cart fa-5x text-muted mb-3"></i>
+            <h2>Your cart is empty</h2>
+            <p class="text-muted">Looks like you haven't added any items to your cart yet.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary mt-3">Continue Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+<!-- Before your existing footer include -->
+
+    {% include 'partials/footer.html' %}
+    
+</body>
+</html>

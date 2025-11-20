@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "partials/head.html" %}
+  <style>
+    .dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem 10%;
+    }
+
+    .dashboard-header {
+        text-align: center;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        color: #fa611b;
+    }
+
+    .cards {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .card {
+        flex: 1 1 calc(25% - 2rem);
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+    }
+
+    .card h3 {
+        font-size: 30px;
+        color: #fa611b;
+    }
+
+    .card a {
+     text-decoration: none; /* Remove underline */
+    }
+
+    .card a:hover h3 {
+    color: #2a9d8f; /* Change color on hover */
+    }
+
+    .card p {
+        font-size: 50px; /* Adjust this value to your preference */
+    font-weight: bold; /* Make the count bold */
+        color: #666;
+    }
+
+    .table-section {
+        overflow-x: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    table th, table td {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+        background-color: #fa611b;
+        color: #fff;
+    }
+
+    table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    @media (max-width: 768px) {
+        .cards {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card {
+            flex: 1 1 100%;
+        }
+    }
+
+    .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .order-card h2 {
+            font-size: 1.25rem;
+            color: #4a0e78;
+            margin-bottom: 1rem;
+        }
+
+        .order-card p {
+            font-size: 1rem;
+            color: #333;
+            margin: 0.5rem 0;
+        }
+
+        .order-card .status {
+            font-weight: bold;
+            color: #7b2cbf;
+        }
+
+        .btn-start-delivery, .btn-delivered {
+            background: linear-gradient(to right, #7b2cbf, #4a0e78);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .btn-start-delivery:hover, .btn-delivered:hover {
+            background: linear-gradient(to right, #4a0e78, #7b2cbf);
+        }
+
+        .btn-start-delivery:disabled, .btn-delivered:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Existing styles remain unchanged */
+        .security-section {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 500px;
+        }
+
+        .security-section label {
+            font-size: 1.1rem;
+            color: #4a0e78;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .security-section input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .security-section p {
+            font-size: 0.9em;
+            color: red;
+            margin-top: 0.5rem;
+        }
+
+        .security-section button {
+            background: linear-gradient(to right, #7b2cbf, #4a0e78);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .security-section button:hover {
+            background: linear-gradient(to right, #4a0e78, #7b2cbf);
+        }
+</style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="static/images/logo.jpg" height="50" width="50" alt="Spice Bazaar Logo" class="logo-image"> 
+                <div class="logo">Spice Bazaar (Courier Dashboard)</div>
+            </div>
+            <div>
+
+                <a href="/courier_profile" style="text-decoration: none;">
+                    <button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Profile
+                    </button>
+                </a>
+
+                <a href="/" class="logout-button" style="text-decoration: none;">
+                    <button style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Logout
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Welcome, {{ session.username.split('@')[0] }}!</h1>
+    </div>
+    
+    <!-- Security Question Section -->
+    {% if not has_security_answer %}
+    <section class="security-section">
+        <form action="{{ url_for('set_security_answer') }}" method="POST">
+            <label for="security_answer">Security Question: What is your Favorite Food?</label>
+            <input type="text" id="security_answer" name="security_answer" maxlength="20" required placeholder="in 1 word">
+            <p>Please remember your answer, as it will be asked in the future to prove authentication.</p>
+            <button type="submit">Submit Answer</button>
+        </form>
+    </section>
+{% endif %}
+
+    <section class="card-container">
+        <h2 style="grid-column: 1 / -1; text-align: center; color: #4a0e78;">My Assigned Orders</h2>
+        {% if assigned_orders %}
+            {% for order in assigned_orders %}
+                <div class="order-card">
+                    <h2>Order Id CM00{{ order.Cart_master_id }}</h2>
+                    <p><strong>Customer:</strong> {{ order.Cust_fname }} {{ order.Cust_lname }}</p>
+                    <p><strong>Address:</strong> {{ order.Cust_street }}, {{ order.Cust_city }}, {{ order.Cust_dist }}, {{ order.Cust_pin }}</p>
+                    <p><strong>Phone:</strong> {{ order.Cust_phone }}</p>
+                    <p><strong>Items:</strong> {{ order.item_count }}</p>
+                    <p><strong>Assigned Date:</strong> {{ order.Cassign_date }}</p>
+                    <p><strong>Max Delivery Date:</strong> {{ order.Max_date_arrival }}</p>
+                    <p class="status"><strong>Status:</strong> {{ order.Cassign_status }}</p>
+                    {% if order.Delivery_status is not none %}
+                        <p><strong>Delivery Date:</strong> {{ order.Del_date }}</p>
+                        <p><strong>Delivery Status:</strong> {{ 'Pending' if order.Delivery_status == 0 else 'Completed' }}</p>
+                    {% endif %}
+                    <div class="button-group">
+                        {% if order.Cassign_status == 'Assigned' %}
+                            <form action="{{ url_for('start_delivery', cassign_id=order.Cassign_id) }}" method="POST">
+                                <button type="submit" class="btn-start-delivery">Start Delivery</button>
+                            </form>
+                        {% elif order.Cassign_status == 'Out for Delivery' %}
+                            <form action="{{ url_for('mark_delivered', cassign_id=order.Cassign_id) }}" method="POST">
+                                <button type="submit" class="btn-delivered">I have Completed Delivery</button>
+                            </form>
+                        {% else %}
+                            <button class="btn-delivered" disabled>Delivered</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="grid-column: 1 / -1; text-align: center; color: #666;">No orders assigned yet.</p>
+        {% endif %}
+    </section>
+
+
+</div>
+{% include "partials/footer.html" %}
+
+</body>
+</html>

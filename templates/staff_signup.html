@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+{% include "partials/head.html" %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('staffSignupForm');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent form from submitting immediately
+            
+            // Show the alert
+            alert('Staff signup successful pending approval');
+            
+            // Then submit the form programmatically
+            setTimeout(() => {
+                this.submit();
+            }, 100); // Small delay to ensure alert is shown
+        });
+    });
+</script>
+</head>
+<body>
+    {% include "partials/header.html" %}
+    
+    <div class="container">
+        <section class="signup-form">
+            <form action="/staff_signup" method="POST" id="staffSignupForm">
+                <h1>Staff Registration Form</h1>
+                {% if errors %}
+                    <div class="error-messages">
+                        <ul>
+                            {% for field, message in errors.items() %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                <label for="username">Email:</label>
+                <input type="text" name="username" value="{{ username }}" readonly>
+        
+                <label for="fname">First Name:</label>
+                <input type="text" id="fname" name="fname" required>
+        
+                <label for="lname">Last Name:</label>
+                <input type="text" id="lname" name="lname" required>
+        
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required>
+        
+                <label for="district">District:</label>
+                <input type="text" id="district" name="district" required>
+        
+                <label for="pin">Pin Code:</label>
+                <input type="text" id="pin" name="pin" maxlength="6" pattern="\d{6}" required>
+        
+                <label for="street">Street Name:</label>
+                <input type="text" id="street" name="street" required>
+        
+                <label for="phone">Phone Number:</label>
+                <input type="text" id="phone" name="phone" maxlength="10" pattern="\d{10}" required>
+        
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+        
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                </select>
+                <!-- Add this before the Sign Up button in customer_signup.html -->
+                <label for="security_answer">Security Question: What is your Favorite Food?</label>
+                <input type="text" id="security_answer" name="security_answer" maxlength="20" required placeholder="in 1 word">
+
+                <!-- Message below the input field -->
+                <p style="font-size: 0.9em; color: red;">Please remember your answer, as it will be asked in the future to prove authentication.</p>
+
+                <button type="submit">Sign Up</button>
+            </form>
+        </section>
+    </div>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: url('/static/images/logsign.jpg') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 80px 20px;
+    }
+
+    form {
+        background-color: beige;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+        width: 500px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+        color: #fa611b;
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #264653;
+        font-weight: bold;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 2px solid #fa611b;
+        border-radius: 30px;
+        background-color: #fff5e6;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: #264653;
+        box-shadow: 0 0 0 3px rgba(38, 70, 83, 0.2);
+    }
+
+    input[readonly] {
+        background-color: #f0f0f0;
+        cursor: not-allowed;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background-color: #fa611b;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #e85a2a;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .error-messages {
+        background-color: #ffebee;
+        border: 2px solid #ff6b6b;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .error-messages ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .error-messages li {
+        color: #dc3545;
+        font-size: 14px;
+        margin: 5px 0;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .error-messages li::before {
+        content: "•";
+        color: #dc3545;
+        position: absolute;
+        left: 5px;
+    }
+
+    footer {
+        background-color: #264653;
+        color: white;
+        text-align: center;
+        padding: 1rem 0;
+        margin-top: auto;
+    }
+</style>
+
+{% include "partials/footer.html" %}
+</body>
+</html>

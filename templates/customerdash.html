@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "partials/head.html" %}
+    <style>
+        .dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem 10%;
+    }
+
+    .dashboard-header {
+        text-align: center;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        color: #fa611b;
+    }
+
+    .cards {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .card {
+        flex: 1 1 calc(25% - 2rem);
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+    }
+
+    .card h3 {
+        font-size: 30px;
+        color: #fa611b;
+    }
+
+    .card a {
+     text-decoration: none; /* Remove underline */
+    }
+
+    .card a:hover h3 {
+    color: #2a9d8f; /* Change color on hover */
+    }
+
+    .card p {
+        font-size: 50px; /* Adjust this value to your preference */
+    font-weight: bold; /* Make the count bold */
+        color: #666;
+    }
+
+    .table-section {
+        overflow-x: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    table th, table td {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+        background-color: #fa611b;
+        color: #fff;
+    }
+
+    table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    @media (max-width: 768px) {
+        .cards {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card {
+            flex: 1 1 100%;
+        }
+    }
+
+    .order-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .order-card h2 {
+            font-size: 1.5rem;
+            color: #4a0e78;
+            margin-bottom: 1rem;
+        }
+
+        .order-card .status {
+            font-size: 1.2rem reels;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .order-card .paid {
+            color: #3498db; /* Blue for Paid status */
+        }
+
+        .order-card .out-for-delivery {
+            color: #e67e22; /* Orange for Out for Delivery */
+        }
+
+        .order-card .delivered {
+            color: #27ae60; /* Green for Delivered */
+        }
+
+        .order-card p {
+            font-size: 1rem;
+            color: #333;
+            margin: 0.5rem 0;
+        }
+
+        .item-list {
+            margin-top: 1rem;
+            border-top: 1px solid #ddd;
+            padding-top: 1rem;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 1rem;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-details p {
+            margin: 0;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-shop {
+            background-color: #0ABAB5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-shop:hover {
+            background-color: #088c87;
+        }
+
+        .btn-logout {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: darkred;
+        }
+        .item a{text-decoration: none;}
+
+        .continue-btn, .download-btn {
+            background-color: #400969;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        .continue-btn:hover, .download-btn:hover {
+            background-color: #2d0047;
+        }
+        .order-container a{text-decoration: none;}
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="static/images/logo.jpg" height="50" width="50" alt="Spice Bazaar Logo" class="logo-image"> 
+                <div class="logo">Spice Bazaar (Customer Dashboard)</div>
+            </div>
+
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="/profile" style="text-decoration: none;">
+                    <button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Profile
+                    </button>
+                </a>
+                <a href="/products" style="text-decoration: none;">
+                    <button style="background-color: #264653; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Shop
+                    </button>
+                </a>
+                <a href="/logout" style="text-decoration: none;">
+                    <button style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Logout
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+    <h1>Welcome, {{ session.username.split('@')[0] }}!</h1></div>
+
+    <section class="order-container">
+        <h2 style="grid-column: 1 / -1; text-align: center; color: #4a0e78;">My Orders</h2>
+        {% if orders %}
+{% for order in orders %}
+    <div class="order-card">
+        <h2>Order Id CM00{{ order.order_id }}</h2>
+        <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+        {% if order.status == 'Paid' %}
+            <p class="status paid">Order Confirmed (Awaiting Delivery)</p>
+        {% elif order.status == 'Out for Delivery' %}
+            <p class="status out-for-delivery">Out for Delivery</p>
+            <p class="status out-for-delivery">Estimated Delivery Date: {{ order.max_date_arrival }}</p>
+        {% elif order.status == 'Delivered' %}
+            <p class="status delivered">Delivered</p>
+        {% endif %}
+        <div class="item-list">
+            <h3>Items:</h3>
+            {% for item in order.order_items %}
+            <div class="item">
+                {% if item.item_image %}
+                <a href="{{ url_for('item_details', item_id=item['item_id'], unit_weight=item['unit_weight']) }}">
+                    <img src="data:image/jpeg;base64,{{ item.item_image }}" alt="{{ item.item_name }}">
+                </a>
+                {% else %}
+                    <img src="/static/images/placeholder.jpg" alt="No Image">
+                {% endif %}
+                <div class="item-details">
+                    <a href="{{ url_for('item_details', item_id=item['item_id'], unit_weight=item['unit_weight']) }}">
+                    <p><strong>{{ item.item_name }} ({{ item.unit_weight}}g)</strong></p>
+                    <p>Qty: {{ item.quantity }} | Price: ₹{{ item.price }}</p></a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('download_invoice_route', order_id=order.order_id) }}" class="download-btn mt-3">Download Invoice</a>
+    </div>
+{% endfor %}
+{% else %}
+<p style="grid-column: 1 / -1; text-align: center; color: #666;">You have no orders yet.</p>
+{% endif %}
+    </section>
+    
+</div>
+
+{% include "partials/footer.html" %}
+</body>
+</html>

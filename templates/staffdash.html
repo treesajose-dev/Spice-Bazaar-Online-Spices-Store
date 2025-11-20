@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include "partials/head.html" %}
+  <style>
+    .dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem 10%;
+    }
+
+    .dashboard-header {
+        text-align: center;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        color: #fa611b;
+    }
+
+    .cards {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .card {
+        flex: 1 1 calc(25% - 2rem);
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+    }
+
+    .card h3 {
+        font-size: 30px;
+        color: #fa611b;
+    }
+
+    .card a {
+     text-decoration: none; /* Remove underline */
+    }
+
+    .card a:hover h3 {
+    color: #2a9d8f; /* Change color on hover */
+    }
+
+    .card p {
+        font-size: 50px; /* Adjust this value to your preference */
+    font-weight: bold; /* Make the count bold */
+        color: #666;
+    }
+
+    .table-section {
+        overflow-x: auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    table th, table td {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+        background-color: #fa611b;
+        color: #fff;
+    }
+
+    table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    @media (max-width: 768px) {
+        .cards {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card {
+            flex: 1 1 100%;
+        }
+    }
+</style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="static/images/logo.jpg" height="50" width="50" alt="Spice Bazaar Logo" class="logo-image"> 
+                <div class="logo">Spice Bazaar (Staff Dashboard)</div>
+            </div>
+            <div>
+                <a href="/staff_profile" style="text-decoration: none;">
+                    <button style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Profile
+                    </button>
+                </a>
+
+                <a href="/" class="logout-button" style="text-decoration: none;">
+                    <button style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                        Logout
+                    </button>
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+
+<div class="dashboard">
+    <div class="dashboard-header">
+    <h1>Welcome, {{ session.username.split('@')[0] }}!</h1></div>
+
+    <div class="cards">
+        <div class="card">
+            <a href="/courier_management">
+                <h3>Couriers</h3>
+            </a>
+            <p>{{ courier_count }}</p>
+        </div>
+        <div class="card">
+            <a href="/vendor_management">
+                <h3>Vendors</h3>
+            </a>
+            <p>{{ vendor_count }}</p>
+        </div>
+        <div class="card">
+            <a href="/category_management">
+                <h3>Categories</h3>
+            </a>
+            <p> {{ category_count }} </p>
+        </div>
+       <div></div>
+        <div class="card">
+            <a href="/subcategory_management">
+                <h3>Subcategories</h3>
+                <p>{{ subcategory_count }}</p>
+            </a>
+            </div>
+        <div class="card">
+            <a href="/item_management">
+                <h3>Items</h3>
+            </a>
+            <p> {{ item_count }} </p>
+        </div>
+        
+        <div class="card">
+            <a href="/purchase_management">
+                <h3>Purchases</h3>
+            </a>
+            <p>{{ purchase_count }} </p>
+        </div>
+        
+    </div>
+
+        <!--
+        <div class="table-section">
+            <h2>Recent Orders</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1001</td>
+                        <td>John Doe</td>
+                        <td>Shipped</td>
+                        <td>$250</td>
+                    </tr>
+                    <tr>
+                        <td>1002</td>
+                        <td>Jane Smith</td>
+                        <td>Processing</td>
+                        <td>$150</td>
+                    </tr>
+                    <tr>
+                        <td>1003</td>
+                        <td>Mike Brown</td>
+                        <td>Delivered</td>
+                        <td>$320</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>  -->
+    </div>
+    
+
+{% include "partials/footer.html" %}
+ 
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Management</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/form_style.css">
+    <style>
+        .container {
+                padding: 20px;
+                max-width: 700px;
+                height: 580px;
+                margin: 0 auto;
+                background-color: beige;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding-bottom: 40px;
+            }
+
+            .form-group select {
+                width: 60%;
+                padding: 10px;
+                border: 3px solid #ff6b35;
+               border-radius: 30px;
+               background-color: #fff5e6;
+               transition: all 0.3s ease;
+                box-sizing: border-box;
+                font-size: 16px;
+                cursor: pointer;
+                display: block;
+                margin: 0 auto; /* Centers the elements horizontally */
+            }
+            
+            /* Styling dropdown options */
+.form-group select option {
+    background-color: #fff5e6;
+    color: #333; /* Dark text for readability */
+    font-size: 16px;
+    padding: 5px;
+}
+            .form-group select:focus {
+                border-color: black;
+                outline: none;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            }
+    </style>
+</head>
+<body>
+    <div class="admin-dashboard">
+        <a href="/admindash">&larr; Admin Dashboard</a>
+    </div>
+
+    <div class="container">
+        
+            <h1><center>Courier Assignments</center></h1>
+        
+
+        <div class="form-group">
+            <form method="POST" action="{{ url_for('courier_assignments') }}">
+                <br>
+                <label>Select a Courier: </label>
+                <select name="courier_id" id="courier_id">
+                    <option value="" disabled {% if not selected_courier_id %}selected{% endif %}>Select a Courier</option>
+                    {% for courier in couriers %}
+                        <option value="{{ courier.Courier_id }}" {% if selected_courier_id == courier.Courier_id|string %}selected{% endif %}>
+                            {{ courier.Courier_name }}
+                        </option>
+                    {% endfor %}
+                </select><br>
+                <button type="submit">View Assignments</button>
+            </form>
+        </div>
+
+        {% if assignments %}
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Assignment ID</th>
+                            <th>Order ID</th>
+                            <th>Item Name</th>
+                            <th>Weight (g)</th>
+                            <th>Quantity</th>
+                            <th>Price (₹)</th>
+                            <th>Assignment Date</th>
+                            <th>Max Delivery Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                            <tr>
+                                <td>{{ assignment.Cassign_id }}</td>
+                                <td>{{ assignment.Cart_master_id }}</td>
+                                <td>{{ assignment.Item_name }}</td>
+                                <td>{{ assignment.Pur_unit_weight }}</td>
+                                <td>{{ assignment.Cart_qty }}</td>
+                                <td>{{ assignment.Cart_price }}</td>
+                                <td>{{ assignment.Cassign_date }}</td>
+                                <td>{{ assignment.Max_date_arrival }}</td>
+                                <td>{{ assignment.Cassign_status }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% elif selected_courier_id %}
+            <p style="text-align: center; color: #666;">No assignments found for the selected courier.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

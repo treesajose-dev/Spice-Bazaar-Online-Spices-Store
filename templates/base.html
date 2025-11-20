@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spice Bazaar - Premium Spices from Around the World</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="static/images/logo.jpg" height="50" width="50" alt="Spice Bazaar Logo" class="logo-image"> 
+                <div class="logo">Spice Bazaar</div>
+            </div>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/signup">Staff Signup</a></li>
+                <li><a href="/admindash">Admin Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2025 Spice Bazaar. All rights reserved.</p>
+    </footer>
+</body>
+</html>
